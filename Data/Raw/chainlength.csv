@@ -1,0 +1,23 @@
+Chain_Length,Analyte,Acronym
+Short,Perfluorobutanoic acid,PFBA
+Short,Perfluorobutanesulfonic acid,PFBS
+Long,Perfluorodecanesulfonic acid,PFDS
+Long,Perfluorodecanoic acid,PFDA
+Long,Perfluorododecanoic acid,PFDoA
+Long,Perfluoroheptanesulfonic acid,PFHpS
+Short,Perfluoroheptanoic acid,PFHpA
+Long,Perfluorohexanesulfonic acid,PFHxS
+Short,Perfluorohexanoic acid,PFHxA
+Long,Perfluorononanesulfonic acid,PFNS
+Long,Perfluorononanoic acid,PFNA
+Long,Perfluorooctanesulfonamide,PFOSA
+Long,2-(N-Ethylperfluorooctanesulfonamido) acetic acid,N-EtFOSAA
+Long,2-(N-Methylperfluorooctanesulfonamido) acetic acid,N-MeFOSAA
+Short,Perfluoropentanesulfonic acid,PFPeS
+Short,Perfluoropentanoic acid,PFPeA
+Long,Perfluorotetradecanoic acid,PFTeA
+Long,Perfluorotridecanoic acid,PFTriA
+Long,Perfluoroundecanoic acid,PFUnA
+Long,Gen-X,HFPO-DA
+Long,Perfluorooctanoic acid,PFOA
+Long,Perfluorooctanesulfonic acid,PFOS
