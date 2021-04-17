@@ -1,0 +1,103 @@
+---
+title: "PFAS_wrangle"
+author: "Karly Nocera and Tay Holiday"
+date: "4/17/2021"
+output: pdf_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+
+```{r setup, include=FALSE}
+# Set your working directory
+
+getwd()
+
+# Load your packages
+
+library(tidyverse)
+library(lubridate)
+
+# Set your ggplot theme
+
+mytheme <- theme_classic(base_size = 14) +
+  theme(axis.text = element_text(color = "black"), 
+        legend.position = "top")
+theme_set(mytheme)
+
+# Load your datasets
+PFAS_long <- read.csv("../Data/Processed/CombinedDatasets_long_cleaned_time.csv", stringsAsFactors = TRUE)
+
+PFAS_wwtp_wide_july <- read.csv("../Data/Processed/2019_WWTP_July.csv")
+PFAS_wwtp_wide_aug <- read.csv("../Data/Processed/2019_WWTP_Aug.csv")
+PFAS_wwtp_wide_sep <- read.csv("../Data/Processed/2019_WWTP_Sept.csv")
+
+```
+
+
+#combine wide
+
+```{r}
+# create wide ISSUES MAKING EACH SITE *AND* BY DATE *AND WITH DUPLLICATE LAB QUALIFIER*
+#PFAS_wide <- pivot_wider(PFAS_clean, names_from = Analyte, values_from = ppt)
+
+PFAS_wide_clean <- rbind(PFAS_wwtp_wide_july, PFAS_wwtp_wide_aug, PFAS_wwtp_wide_sep)
+
+# if doing through R, remember to add sum PFOA/PFOS and total PFAS columns
+```
+
+
+```{r}
+
+# this would happen in cleaning but haven't done that yet
+
+# QUESTION: how to remove time stamp from only some
+#1. remove time stamp
+#2. convert to date format (mdy_hms)
+
+PFAS_long$Sample.Date <- mdy(PFAS_long$Sample.Date)
+
+## ISSUE WITH "Type" col name -- rename not working
+#rename(PFAS_clean, Type = ï..Type)
+
+# remove Sum and Total rows
+
+PFAS_long <- PFAS_long[!grepl("Sum",PFAS_long$Analyte),]
+
+PFAS_long <- PFAS_long[!grepl("Total",PFAS_long$Analyte),]
+
+# only keep the analytes we care about
+
+#unique(PFAS_clean$Analyte)
+
+# STILL TO DO ((NOTE CURRENT ANALYSES WRONG WITHOUT THIS))
+# convert 
+# "PFTeA (PFTA)" and "PFTeA/PFTeDA" to "PFTeA"
+# "PFTriA (PFTrA)" and "PFTriA/PFTrDA" to PFTriA
+# "PFUnA/PFUdA" to PFUnA
+# "HFPO-DA (GenX)" and "NaDONA/GENx" to HFPO
+
+
+### THIS ISN'T THE RIGHT WAY TO REMOVE?? they disappear but not removed from dataset, as seen in 'summary'
+PFAS_long_clean <-
+  PFAS_long %>%
+  filter(Analyte %in% c("PFBA", "PFBS", "PFDS", "PFDA", "PFDoA", "PFHpS", "PFHpA", "PFHxS", "PFHxA", "PFNS", "PFNA", "PFOSA", "N-EtFOSAA", "N-MeFOSAA", "PFPeS", "PFPeA", "PFTeA", "PFTriA", "PFUnA", "HFPO-DA", "PFOA", "PFOS"))
+
+```
+
+# save processed files
+
+```{r}
+
+# bound PFAS_wide
+
+write.csv(PFAS_wide_clean, row.names=FALSE, file = "./Data/Processed/PFAS_wide_clean.csv")
+
+# PFAS_clean(er)
+
+write.csv(PFAS_long_clean, row.names=FALSE, file = "./Data/Processed/PFAS_long_clean.csv")
+
+```
+
