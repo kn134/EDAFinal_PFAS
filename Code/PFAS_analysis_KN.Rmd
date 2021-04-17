@@ -1,0 +1,149 @@
+---
+title: "PFAS_analysis_KN"
+author: "Karly Nocera and Tay Holiday"
+date: "4/16/2021"
+output: pdf_document
+editor_options: 
+  chunk_output_type: console
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+```{r setup, include=FALSE}
+# Set your working directory
+
+getwd()
+
+# Load your packages
+
+library(tidyverse)
+library(lubridate)
+
+# Set your ggplot theme
+
+mytheme <- theme_classic(base_size = 14) +
+  theme(axis.text = element_text(color = "black"), 
+        legend.position = "top")
+theme_set(mytheme)
+
+# Load your datasets
+PFAS_clean <- read.csv("../Data/Processed/combined_clean_time.csv", stringsAsFactors = TRUE)
+
+```
+
+
+# Analysis
+
+Insert visualizations and text describing your main analyses. Format your R chunks so that graphs are displayed but code and other output is not displayed. Instead, describe the results of any statistical tests in the main text (e.g., "Variable x was significantly different among y groups (ANOVA; df = 300, F = 5.55, p < 0.0001)"). Each paragraph, accompanied by one or more visualizations, should describe the major findings and how they relate to the question and hypotheses. Divide this section into subsections, one for each research question.
+
+Each figure should be accompanied by a caption, and each figure should be referenced within the text
+
+
+
+
+## Question 1: Source Data Analytes
+
+### Question 1a: Long v Short
+
+
+### Question 1b: Top 5 Analytes
+
+
+### Question 1c: Are there rivers that are scary we aren't talking about? (high and type of analyte)
+
+
+### Question 1d: [Tay] Are any spots with one analyte over 70? over 30?
+
+
+### Question 1e: [Tay] Total PFAS over 130
+
+
+### Question 1f: Temporal relationships?
+
+
+
+
+
+
+
+
+## Question 2: Source Data ND/Qualifiers
+
+### Question 2a: [Tay] Summary Stats: ND below 5; ND below 10; ND below 20 (distrubtion bell curve)
+
+
+### Question 2b: [Tay] Percentages (how many ND / total detections under 30) within any. Within GenX. See how many of which analytes have the worst percentage rations --> play with those trends
+
+
+### Question 2c: [Tay] ND: Variability of lab qualifiers (know the level is above/below U) - by analyte per WWTP
+
+
+
+
+
+
+## Question 3: WWTP Analytes
+
+### Question 3a: PFOA, PFOS, GenX, sum PFAS accross sites (by month, facet wrap)
+
+```{r}
+
+
+
+```
+
+
+### Question 3b: Top 3? 5? analytes (aka are there analytes we aren't looking at) -- by chain length
+```{r}
+
+
+```
+
+
+### Question 3c: Within a plant, is there a temporal trend (facet_wrap; 25 rows)
+```{r}
+
+```
+
+
+### Question 3d: Long vs Short
+
+```{r}
+
+
+
+```
+
+### Question 3e: [Tay] Are any spots with one analyte over 70? over 30?
+
+```{r}
+
+```
+
+### Question 1e: [Tay] Total PFAS over 130
+
+```{r}
+
+```
+
+
+
+
+
+
+
+
+
+## Question 4: WWTP ND/Qualifiers
+
+### Question 4a: [Tay] Summary Stats: ND below 5; ND below 10; ND below 20 (distrubtion bell curve)
+
+
+### Question 4b: [Tay] Percentages (how many ND / total detections under 30) within any. Within GenX. See how many of which analytes have the worst percentage rations --> play with those trends
+
+
+### Question 4c: [Tay] ND: Variability of lab qualifiers (know the level is above/below U) - by analyte per WWTP
+
+
