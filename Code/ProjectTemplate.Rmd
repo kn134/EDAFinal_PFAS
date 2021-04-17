@@ -25,7 +25,14 @@ mainfont: Times New Roman
 knitr::opts_chunk$set(echo = TRUE)
 ```
 
-
+* Knitting commands in code chunks:
+ - `include = FALSE` - code is run, but neither code nor results appear in knitted file
+ - `echo = FALSE`    - code not included in knitted file, but results are
+ - `eval = FALSE`    - code is not run in the knitted file
+ - `message = FALSE` - messages do not appear in knitted file
+ - `warning = FALSE` - warnings do not appear...
+ - `fig.cap = "..."` - adds a caption to graphical results
+ 
 
 ```{r setup, include=FALSE}
 # Set your working directory
@@ -56,6 +63,11 @@ Provide information on how the dataset for this analysis were collected, the dat
 Describe how you wrangled your dataset in a format similar to a methods section of a journal article.
 
 Add a table that summarizes your data structure (variables, units, ranges and/or central tendencies, data source if multiple are used, etc.). This table can be made in markdown text or inserted as a `kable` function in an R chunk. If the latter, do not include the code used to generate your table.
+
+Dataset Names | Information
+--------------|-------------
+EPAair_O3_NC2018_raw|2018 EPA air samples of ozone levels in North Carolina
+
 
 
 \newpage
