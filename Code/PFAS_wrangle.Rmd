@@ -1,6 +1,6 @@
 ---
 title: "PFAS_wrangle"
-author: "Karly Nocera and Tay Holiday"
+author: "Karly Nocera and Tay Holliday"
 date: "4/17/2021"
 output: pdf_document
 ---
@@ -30,9 +30,10 @@ theme_set(mytheme)
 # Load your datasets
 PFAS_long <- read.csv("../Data/Processed/CombinedDatasets_long_cleaned_time.csv", stringsAsFactors = TRUE)
 
-PFAS_wwtp_wide_july <- read.csv("../Data/Processed/2019_WWTP_July.csv")
-PFAS_wwtp_wide_aug <- read.csv("../Data/Processed/2019_WWTP_Aug.csv")
-PFAS_wwtp_wide_sep <- read.csv("../Data/Processed/2019_WWTP_Sept.csv")
+PFAS_wwtp_wide_july <- read.csv("../Data/Processed/2019_WWTP_July.csv", stringsAsFactors = TRUE)
+PFAS_wwtp_wide_aug <- read.csv("../Data/Processed/2019_WWTP_Aug.csv", stringsAsFactors = TRUE)
+PFAS_wwtp_wide_sep <- read.csv("../Data/Processed/2019_WWTP_Sept.csv", stringsAsFactors = TRUE)
+PFAS_source_wide <- read.csv("../Data/Processed/2018_PublicSupply_wide_latlong.csv", stringsAsFactors = TRUE)
 
 ```
 
@@ -43,7 +44,9 @@ PFAS_wwtp_wide_sep <- read.csv("../Data/Processed/2019_WWTP_Sept.csv")
 # create wide ISSUES MAKING EACH SITE *AND* BY DATE *AND WITH DUPLLICATE LAB QUALIFIER*
 #PFAS_wide <- pivot_wider(PFAS_clean, names_from = Analyte, values_from = ppt)
 
-PFAS_wide_clean <- rbind(PFAS_wwtp_wide_july, PFAS_wwtp_wide_aug, PFAS_wwtp_wide_sep)
+PFAS_wide_wwtp <- rbind(PFAS_wwtp_wide_july, PFAS_wwtp_wide_aug, PFAS_wwtp_wide_sep)
+
+PFAS_wide_clean <- full_join(PFAS_wide_wwtp, PFAS_source_wide)
 
 # if doing through R, remember to add sum PFOA/PFOS and total PFAS columns
 ```
@@ -58,6 +61,7 @@ PFAS_wide_clean <- rbind(PFAS_wwtp_wide_july, PFAS_wwtp_wide_aug, PFAS_wwtp_wide
 #2. convert to date format (mdy_hms)
 
 PFAS_long$Sample.Date <- mdy(PFAS_long$Sample.Date)
+PFAS_wide_clean$Sample.Date <- mdy(PFAS_wide_clean$Sample.Date)
 
 ## ISSUE WITH "Type" col name -- rename not working
 #rename(PFAS_clean, Type = ï..Type)
@@ -93,11 +97,11 @@ PFAS_long_clean <-
 
 # bound PFAS_wide
 
-write.csv(PFAS_wide_clean, row.names=FALSE, file = "./Data/Processed/PFAS_wide_clean.csv")
+write.csv(PFAS_wide_clean, row.names=FALSE, file = "../Data/Processed/PFAS_wide_clean.csv")
 
 # PFAS_clean(er)
 
-write.csv(PFAS_long_clean, row.names=FALSE, file = "./Data/Processed/PFAS_long_clean.csv")
+write.csv(PFAS_long_clean, row.names=FALSE, file = "../Data/Processed/PFAS_long_clean.csv")
 
 ```
 
