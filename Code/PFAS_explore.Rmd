@@ -1,0 +1,209 @@
+---
+title: "PFAS_explore"
+author: "Karly Nocera and Tay Holiday"
+date: "4/16/2021"
+output: pdf_document
+editor_options: 
+  chunk_output_type: console
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+```{r setup, include=FALSE}
+# Set your working directory
+
+getwd()
+
+# Load your packages
+
+library(tidyverse)
+library(lubridate)
+
+# Set your ggplot theme
+
+mytheme <- theme_classic(base_size = 14) +
+  theme(axis.text = element_text(color = "black"), 
+        legend.position = "top")
+theme_set(mytheme)
+
+# Load your datasets
+PFAS_clean <- read.csv("./Data/Processed/combined_clean_time.csv", stringsAsFactors = TRUE)
+
+```
+
+# Exploratory Analysis 
+Insert exploratory visualizations of your dataset. This may include, but is not limited to, graphs illustrating the distributions of variables of interest and/or maps of the spatial context of your dataset. 
+
+Format your R chunks so that graphs are displayed but code is not displayed. Accompany these graphs with text sections that describe the visualizations and provide context for further analyses.
+
+Each figure should be accompanied by a caption, and each figure should be referenced within the text. 
+
+Scope: think about what information someone might want to know about the dataset before analyzing it statistically. How might you visualize this information?
+
+```{r}
+
+# this would happen in cleaning but haven't done that yet
+
+# QUESTION: how to remove time stamp from only some
+#1. remove time stamp
+#2. convert to date format (mdy_hms)
+
+PFAS_clean$Sample.Date <- mdy(PFAS_clean$Sample.Date)
+
+## ISSUE WITH "Type" col name -- rename not working
+rename(PFAS_clean, Type = ï..Type)
+
+# remove Sum and Total rows
+
+PFAS_clean <- PFAS_clean[!grepl("Sum",PFAS_clean$Analyte),]
+PFAS_clean <- PFAS_clean[!grepl("Total",PFAS_clean$Analyte),]
+
+# only keep the analytes we care about
+
+unique(PFAS_clean$Analyte)
+
+# STILL TO DO ((NOTE CURRENT ANALYSES WRONG WITHOUT THIS))
+# convert 
+# "PFTeA (PFTA)" and "PFTeA/PFTeDA" to "PFTeA"
+# "PFTriA (PFTrA)" and "PFTriA/PFTrDA" to PFTriA
+# "PFUnA/PFUdA" to PFUnA
+# "HFPO-DA (GenX)" and "NaDONA/GENx" to HFPO
+
+
+### THIS ISN'T THE RIGHT WAY TO REMOVE?? they disappear but not removed from dataset, as seen in 'summary'
+PFAS_clean <-
+  PFAS_clean %>%
+  filter(Analyte %in% c("PFBA", "PFBS", "PFDS", "PFDA", "PFDoA", "PFHpS", "PFHpA", "PFHxS", "PFHxA", "PFNS", "PFNA", "PFOSA", "N-EtFOSAA", "N-MeFOSAA", "PFPeS", "PFPeA", "PFTeA", "PFTriA", "PFUnA", "HFPO-DA", "PFOA", "PFOS"))
+
+
+```
+
+
+## summary stats
+
+```{r}
+
+colnames(PFAS_clean)
+head(PFAS_clean)
+
+summary(PFAS_clean)
+
+#Using the `summary` function, determine the six most commonly studied species in the dataset (common name). What do these species have in common, and why might they be of interest over other insects? 
+summary(PFAS_clean$Analyte)
+
+str(PFAS_clean)
+dim(PFAS_clean)
+
+
+```
+
+## explore with visuals
+
+# bar chart
+
+```{r}
+
+# visualize count data for categorical variables (how many samples of each analyte)
+
+# NEED TO CLEAN SO CAN SEE ALL LABLES (maybe tilt)
+
+ggplot(PFAS_clean, aes(x = Analyte)) +
+  geom_bar()
+
+# how many samples of analytes with ppt values
+
+ggplot(PFAS_clean, aes(x = Analyte)) +
+  geom_bar(data = PFAS_clean %>% filter(ppt != "NA")) +
+  labs(x = "Analyte", y = "Number of Samples")
+
+```
+
+# Histogram
+
+Visualize distributions of values for continuous numerical variables.
+
+```{r}
+
+ggplot(PFAS_clean) +
+  geom_histogram(aes(x = ppt)) +
+  labs(x = "Analyte", y = "Number of Samples")
+
+ggplot(PFAS_clean, aes(x = ppt)) +
+  geom_histogram(binwidth = 50) + 
+  scale_x_continuous(limits = c(0, 250)) +
+  labs(x = "Analyte", y = "Number of Samples")
+  
+```
+
+# Frequency line graph
+
+An alternate to a histogram is a frequency polygon graph (distributions of values for continuous numerical variables). Instead of displaying bars,  counts of continuous variables are displayed as lines. This is advantageous if you want to display multiple variables or categories of variables at once.
+
+```{r}
+
+ggplot(PFAS_clean) +
+  geom_freqpoly(aes(x = ppt, color = Analyte), bins = 50) +
+  scale_x_continuous(limits = c(0, 250)) +
+  theme(legend.position = "top") +
+  labs(x = "Analyte", y = "Number of Samples")
+
+```
+
+# box and whisker violin
+
+A box-and-whisker plot is yet another alternative to histograms (distributions of values for continuous numerical variables). These plots consist of: 
+
+* A box from the 25th to the 75th percentile of the data, called the interquartile range (IQR).
+
+* A bold line inside the box representing the median value of the data. Whether the median is in the center or off to one side of the IQR will give you an idea about the skewness of your data.
+
+* A line outside of the box representing values falling within 1.5 times the IQR. 
+
+* Points representing outliers, values that fall outside 1.5 times the IQR. 
+
+An alternate option is a violin plot, which displays density distributions, somewhat like a hybrid of the box-and-whiskers and the frequency polygon plot.
+
+```{r}
+
+## DOES NOT LOOK GOOD -- HOW TO FIX? MAYBE FACET WRAP BY ANALYTE?
+
+ggplot(PFAS_clean) +
+  geom_violin(aes(x = Analyte, y = ppt), 
+              draw_quantiles = c(0.25, 0.5, 0.75)) +
+  scale_y_continuous(limits = c(0, 100)) 
+
+# picking top analytes
+
+ggplot(subset(PFAS_clean,Analyte %in% c("PFOA", "PFOS"))) +
+  geom_violin(aes(x = Analyte, y = ppt), 
+              draw_quantiles = c(0.25, 0.5, 0.75)) +
+  scale_y_continuous(limits = c(0, 100))
+
+
+# by WWTP sites -- PICK TOP or !! FACET WRAP !! 
+ggplot(subset(PFAS_clean,ï..Type %in% c("WWTP"))) +
+  geom_violin(aes(x = Site, y = ppt), 
+              draw_quantiles = c(0.25, 0.5, 0.75)) +
+  scale_y_continuous(limits = c(0, 100))
+
+```
+
+
+## spatial by site (in clean, join with lat/long)
+
+```{r}
+
+
+
+```
+
+
+
+
+
+
+
+
+
