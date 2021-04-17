@@ -29,7 +29,9 @@ mytheme <- theme_classic(base_size = 14) +
 theme_set(mytheme)
 
 # Load your datasets
-PFAS_clean <- read.csv("./Data/Processed/combined_clean_time.csv", stringsAsFactors = TRUE)
+PFAS_wide_clean <- read.csv("./Data/Processed/PFAS_wide_clean.csv", stringsAsFactors = TRUE)
+
+PFAS_long_clean <- read.csv("./Data/Processed/PFAS_long_clean.csv", stringsAsFactors = TRUE)
 
 ```
 
@@ -42,59 +44,20 @@ Each figure should be accompanied by a caption, and each figure should be refere
 
 Scope: think about what information someone might want to know about the dataset before analyzing it statistically. How might you visualize this information?
 
-```{r}
-
-# this would happen in cleaning but haven't done that yet
-
-# QUESTION: how to remove time stamp from only some
-#1. remove time stamp
-#2. convert to date format (mdy_hms)
-
-PFAS_clean$Sample.Date <- mdy(PFAS_clean$Sample.Date)
-
-## ISSUE WITH "Type" col name -- rename not working
-rename(PFAS_clean, Type = ï..Type)
-
-# remove Sum and Total rows
-
-PFAS_clean <- PFAS_clean[!grepl("Sum",PFAS_clean$Analyte),]
-PFAS_clean <- PFAS_clean[!grepl("Total",PFAS_clean$Analyte),]
-
-# only keep the analytes we care about
-
-unique(PFAS_clean$Analyte)
-
-# STILL TO DO ((NOTE CURRENT ANALYSES WRONG WITHOUT THIS))
-# convert 
-# "PFTeA (PFTA)" and "PFTeA/PFTeDA" to "PFTeA"
-# "PFTriA (PFTrA)" and "PFTriA/PFTrDA" to PFTriA
-# "PFUnA/PFUdA" to PFUnA
-# "HFPO-DA (GenX)" and "NaDONA/GENx" to HFPO
-
-
-### THIS ISN'T THE RIGHT WAY TO REMOVE?? they disappear but not removed from dataset, as seen in 'summary'
-PFAS_clean <-
-  PFAS_clean %>%
-  filter(Analyte %in% c("PFBA", "PFBS", "PFDS", "PFDA", "PFDoA", "PFHpS", "PFHpA", "PFHxS", "PFHxA", "PFNS", "PFNA", "PFOSA", "N-EtFOSAA", "N-MeFOSAA", "PFPeS", "PFPeA", "PFTeA", "PFTriA", "PFUnA", "HFPO-DA", "PFOA", "PFOS"))
-
-
-```
-
-
 ## summary stats
 
 ```{r}
 
-colnames(PFAS_clean)
-head(PFAS_clean)
+colnames(PFAS_long_clean)
+head(PFAS_long_clean)
 
-summary(PFAS_clean)
+summary(PFAS_long_clean)
 
 #Using the `summary` function, determine the six most commonly studied species in the dataset (common name). What do these species have in common, and why might they be of interest over other insects? 
-summary(PFAS_clean$Analyte)
+summary(PFAS_long_clean$Analyte)
 
-str(PFAS_clean)
-dim(PFAS_clean)
+str(PFAS_long_clean)
+dim(PFAS_long_clean)
 
 
 ```
@@ -109,13 +72,13 @@ dim(PFAS_clean)
 
 # NEED TO CLEAN SO CAN SEE ALL LABLES (maybe tilt)
 
-ggplot(PFAS_clean, aes(x = Analyte)) +
+ggplot(PFAS_long_clean, aes(x = Analyte)) +
   geom_bar()
 
 # how many samples of analytes with ppt values
 
-ggplot(PFAS_clean, aes(x = Analyte)) +
-  geom_bar(data = PFAS_clean %>% filter(ppt != "NA")) +
+ggplot(PFAS_long_clean, aes(x = Analyte)) +
+  geom_bar(data = PFAS_long_clean %>% filter(ppt != "NA")) +
   labs(x = "Analyte", y = "Number of Samples")
 
 ```
@@ -126,11 +89,11 @@ Visualize distributions of values for continuous numerical variables.
 
 ```{r}
 
-ggplot(PFAS_clean) +
+ggplot(PFAS_long_clean) +
   geom_histogram(aes(x = ppt)) +
   labs(x = "Analyte", y = "Number of Samples")
 
-ggplot(PFAS_clean, aes(x = ppt)) +
+ggplot(PFAS_long_clean, aes(x = ppt)) +
   geom_histogram(binwidth = 50) + 
   scale_x_continuous(limits = c(0, 250)) +
   labs(x = "Analyte", y = "Number of Samples")
@@ -143,7 +106,7 @@ An alternate to a histogram is a frequency polygon graph (distributions of value
 
 ```{r}
 
-ggplot(PFAS_clean) +
+ggplot(PFAS_long_clean) +
   geom_freqpoly(aes(x = ppt, color = Analyte), bins = 50) +
   scale_x_continuous(limits = c(0, 250)) +
   theme(legend.position = "top") +
@@ -169,21 +132,21 @@ An alternate option is a violin plot, which displays density distributions, some
 
 ## DOES NOT LOOK GOOD -- HOW TO FIX? MAYBE FACET WRAP BY ANALYTE?
 
-ggplot(PFAS_clean) +
+ggplot(PFAS_long_clean) +
   geom_violin(aes(x = Analyte, y = ppt), 
               draw_quantiles = c(0.25, 0.5, 0.75)) +
   scale_y_continuous(limits = c(0, 100)) 
 
 # picking top analytes
 
-ggplot(subset(PFAS_clean,Analyte %in% c("PFOA", "PFOS"))) +
+ggplot(subset(PFAS_long_clean,Analyte %in% c("PFOA", "PFOS"))) +
   geom_violin(aes(x = Analyte, y = ppt), 
               draw_quantiles = c(0.25, 0.5, 0.75)) +
   scale_y_continuous(limits = c(0, 100))
 
 
 # by WWTP sites -- PICK TOP or !! FACET WRAP !! 
-ggplot(subset(PFAS_clean,ï..Type %in% c("WWTP"))) +
+ggplot(subset(PFAS_long_clean,ï..Type %in% c("WWTP"))) +
   geom_violin(aes(x = Site, y = ppt), 
               draw_quantiles = c(0.25, 0.5, 0.75)) +
   scale_y_continuous(limits = c(0, 100))
