@@ -20,10 +20,8 @@ mainfont: Times New Roman
 \listoffigures 
 \newpage
 
-
 ```{r setup, include=FALSE}
 #sets the default values of chunk options
-
 knitr::opts_chunk$set(echo = TRUE)
 ```
 
