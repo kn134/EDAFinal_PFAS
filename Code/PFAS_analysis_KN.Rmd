@@ -26,10 +26,12 @@ library(lubridate)
 mytheme <- theme_classic(base_size = 14) +
   theme(axis.text = element_text(color = "black"), 
         legend.position = "top")
+
 theme_set(mytheme)
 
 # Load your datasets
-PFAS_clean <- read.csv("../Data/Processed/combined_clean_time.csv", stringsAsFactors = TRUE)
+PFAS_long_clean <- read.csv("./Data/Processed/PFAS_long_clean.csv", stringsAsFactors = TRUE)
+PFAS_wide_clean <- read.csv("./Data/Processed/PFAS_wide_clean.csv", stringsAsFactors = TRUE)
 
 ```
 
@@ -56,9 +58,65 @@ Each figure should be accompanied by a caption, and each figure should be refere
 
 ### Question 1d: [Tay] Are any spots with one analyte over 70? over 30?
 
+```{r}
+#Any locations with Analyte above 30? 70?
+#To do this, a simple pipe should do to filter out which analytes/site are above the given value.
+#EPA_Processed_2018$Result <- subset(EPA_Processed_2018$Result, !is.na()) #converts the result into a numeric value instead of a factor
+
+source_analyte_above_30 <- 
+  PFAS_long_clean %>%
+  filter(Type == "Source") %>%
+  filter(ppt > 30)
+
+source_analyte_above_70 <- 
+  PFAS_long_clean %>%
+  filter(Type == "Source") %>%
+  filter(ppt > 70)
+
+unique(source_analyte_above_30$Site) #11 Sites above 30 
+unique(source_analyte_above_70$Site) #5 sites above 70
+
+```
+
 
 ### Question 1e: [Tay] Total PFAS over 130
 
+```{r}
+
+#Total PFAS over 130
+
+# sum of pfas for every source site at that date
+# filter for those over 130
+# unique for how many sites had total pfas over 130
+
+Total_PFAS_Source_Over130 <- 
+  PFAS_wide_clean %>%
+  filter (Type == "Source") %>%
+  filter (sum_pfas > 130)
+
+## hey, Tay. Do this. Please :) 
+
+# rename without dashes
+
+rename(PFAS_wide_clean, petal_length = Petal.Length)
+
+PFAS_wide_clean <-
+  PFAS_wide_clean %>%
+  mutate(TotalPFAS = (PFBA + PFBS + PFDS + PFDA + PFDoA + PFHpS + PFHpA + PFHxS + PFHxA + PFNS + PFNA + PFOSA + N.EtFOSAA + N.MeFOSAA + PFPeS + PFPeA + PFTeA + PFTriA + PFUnA + HFPO.DA + PFOA + PFOS), na.rm=TRUE)
+
+PFAS_wide_sum <-
+  PFAS_wide_clean %>%
+  mutate(TotalPFAS = (PFBA + PFBS + PFDS + PFDA + PFDoA + PFHpS + PFHpA + PFHxS + PFHxA + PFNS + PFNA + PFOSA + N.EtFOSAA + N.MeFOSAA + PFPeS + PFPeA + PFTeA + PFTriA + PFUnA + HFPO.DA + PFOA + PFOS, na.rm=TRUE))
+
+PFAS_wide_sum <-
+  PFAS_wide_clean %>%
+  mutate(TotalPFAS = sum(PFBA:PFOS, na.rm=TRUE))
+
+PFAS_wide_sum
+
+#YAY! Got it!
+
+```
 
 ### Question 1f: Temporal relationships?
 
@@ -73,11 +131,19 @@ Each figure should be accompanied by a caption, and each figure should be refere
 
 ### Question 2a: [Tay] Summary Stats: ND below 5; ND below 10; ND below 20 (distrubtion bell curve)
 
+```{r}
+
+
+
+```
+
+
 
 ### Question 2b: [Tay] Percentages (how many ND / total detections under 30) within any. Within GenX. See how many of which analytes have the worst percentage rations --> play with those trends
 
 
-### Question 2c: [Tay] ND: Variability of lab qualifiers (know the level is above/below U) - by analyte per WWTP
+### Question 2c: [Tay] ND: Variability of lab qualifiers (know the level is above/below U) - by analyte per Source
+
 
 
 
@@ -119,6 +185,19 @@ Each figure should be accompanied by a caption, and each figure should be refere
 ### Question 3e: [Tay] Are any spots with one analyte over 70? over 30?
 
 ```{r}
+
+wwtp_analyte_above_30 <- 
+  PFAS_long_clean %>%
+  filter(Type == "WWTP") %>%
+  filter(ppt > 30)
+
+wwtp_analyte_above_70 <- 
+  PFAS_long_clean %>%
+  filter(Type == "WWTP") %>%
+  filter(ppt > 70)
+
+unique(wwtp_analyte_above_30$Site) #21 Sites above 30 
+unique(wwtp_analyte_above_70$Site) #13 sites above 70
 
 ```
 

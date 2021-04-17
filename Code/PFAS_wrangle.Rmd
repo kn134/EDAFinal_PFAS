@@ -33,6 +33,7 @@ PFAS_long <- read.csv("../Data/Processed/CombinedDatasets_long_cleaned_time.csv"
 PFAS_wwtp_wide_july <- read.csv("../Data/Processed/2019_WWTP_July.csv", stringsAsFactors = TRUE)
 PFAS_wwtp_wide_aug <- read.csv("../Data/Processed/2019_WWTP_Aug.csv", stringsAsFactors = TRUE)
 PFAS_wwtp_wide_sep <- read.csv("../Data/Processed/2019_WWTP_Sept.csv", stringsAsFactors = TRUE)
+
 PFAS_source_wide <- read.csv("../Data/Processed/2018_PublicSupply_wide_latlong.csv", stringsAsFactors = TRUE)
 
 ```
@@ -46,30 +47,29 @@ PFAS_source_wide <- read.csv("../Data/Processed/2018_PublicSupply_wide_latlong.c
 
 PFAS_wide_wwtp <- rbind(PFAS_wwtp_wide_july, PFAS_wwtp_wide_aug, PFAS_wwtp_wide_sep)
 
-PFAS_wide_clean <- full_join(PFAS_wide_wwtp, PFAS_source_wide)
+PFAS_wide_combined <- full_join(PFAS_wide_wwtp, PFAS_source_wide)
 
 # if doing through R, remember to add sum PFOA/PFOS and total PFAS columns
+```
+```{r}
+## PFAS wide needs site type
+
+long_site <- 
+  PFAS_long %>%
+  select(Type, Site)
+
+PFAS_wide_clean <- left_join(long_site, PFAS_wide_combined, by = "Site")
+
 ```
 
 
 ```{r}
 
-# this would happen in cleaning but haven't done that yet
-
-# QUESTION: how to remove time stamp from only some
-#1. remove time stamp
-#2. convert to date format (mdy_hms)
-
 PFAS_long$Sample.Date <- mdy(PFAS_long$Sample.Date)
 PFAS_wide_clean$Sample.Date <- mdy(PFAS_wide_clean$Sample.Date)
 
-## ISSUE WITH "Type" col name -- rename not working
-#rename(PFAS_clean, Type = ï..Type)
-
 # remove Sum and Total rows
-
 PFAS_long <- PFAS_long[!grepl("Sum",PFAS_long$Analyte),]
-
 PFAS_long <- PFAS_long[!grepl("Total",PFAS_long$Analyte),]
 
 # only keep the analytes we care about
@@ -90,6 +90,32 @@ PFAS_long_clean <-
   filter(Analyte %in% c("PFBA", "PFBS", "PFDS", "PFDA", "PFDoA", "PFHpS", "PFHpA", "PFHxS", "PFHxA", "PFNS", "PFNA", "PFOSA", "N-EtFOSAA", "N-MeFOSAA", "PFPeS", "PFPeA", "PFTeA", "PFTriA", "PFUnA", "HFPO-DA", "PFOA", "PFOS"))
 
 ```
+
+# chain lengths
+
+```{r}
+
+#Creates a function to determine if Analyte is short or long
+chain.length.function <- function(x){
+    ifelse(x %in% c("PFBA","PFBS","PFHpA","PFHxA","PFPeS","PFPeA","4:2 FTS"), "short", "long")}
+
+#Makes a chain.length column in the long data Set
+PFAS_long_clean <- PFAS_long_clean %>%
+  mutate(chain.length = chain.length.function(Analyte)) 
+
+```
+
+
+```{r}
+
+
+```
+
+
+
+# still to do
+## PFAS long needs lat/long
+
 
 # save processed files
 
