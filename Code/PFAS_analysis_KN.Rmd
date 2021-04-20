@@ -31,6 +31,7 @@ theme_set(mytheme)
 
 # Load your datasets
 PFAS_long_clean <- read.csv("./Data/Processed/PFAS_long_clean.csv", stringsAsFactors = TRUE)
+
 PFAS_wide_clean <- read.csv("./Data/Processed/PFAS_wide_clean.csv", stringsAsFactors = TRUE)
 
 ```
@@ -49,12 +50,69 @@ Each figure should be accompanied by a caption, and each figure should be refere
 
 ### Question 1a: Long v Short
 
+```{r}
+
+# want to know what type of remediation is needed to deal with their contamination (GAC short chain; RO both)
+
+# add up all the ppt for long at the site; add up ppt for short
+
+#I'm sure there's a way to do it this way, but not working
+#chain_long <- c('PFDS','PFDA','PFDoA','PFHpS','PFHxS','PFNS','PFNA','PFOSA','N.EtFOSAA','N.MeFOSAA','PFTeA','PFTriA','PFUnA','HFPO.DA','PFOA','PFOS')
+
+#chain_short <- c(PFBA, PFBS,PFHpA,PFHxA,PFPeS,PFPeA)
+
+PFAS_wide_clean <- 
+    PFAS_wide_clean %>% 
+    rowwise() %>% 
+    mutate(short.ppt = sum(PFBA, PFBS, PFHpA, PFHxA, PFPeS, PFPeA, na.rm = TRUE)) %>%
+    mutate(long.ppt = sum(PFDS, PFDA, PFDoA, PFHpS, PFHxS, PFNS, PFNA, PFOSA, N.EtFOSAA, N.MeFOSAA, PFTeA, PFTriA, PFUnA, HFPO.DA, PFOA, PFOS, na.rm = TRUE))
+  
+# stacked histogram ppt vs site
+
+Site <- PFAS_wide_clean$Site
+short.ppt <- PFAS_wide_clean$short.ppt
+long.ppt <- PFAS_wide_clean$long.ppt
+
+df2 <- rbind(data.frame(Site, "ppt" = short.ppt, "Chain"="Short"), data.frame(Site, "ppt" = long.ppt, "Chain"="Long"))
+
+ggplot(df2, aes(x = Site, y = ppt))+
+  geom_col(aes(fill = Chain))
+
+
+# histogram by long chain, maybe color it later
+
+ggplot(PFAS_long_clean, aes(fill=Analyte, y=ppt, x=Site)) + 
+    geom_bar(position="stack", stat="identity")
+
+```
 
 ### Question 1b: Top 5 Analytes
+
+```{r}
+
+# facet wrap each site by x = analyte y = ppt
+
+# looks terrible.
+
+ggplot(subset(PFAS_long_clean, Type == "Source"), aes(x = Analyte, y = ppt)) + 
+  geom_bar(stat="identity") +
+  facet_wrap(vars(Site), nrow = 11)
+
+# !is.na does nothing
+#ggplot(subset(PFAS_long_clean, Type == "Source", !is.na(ppt)), aes(x = Analyte, y = ppt)) + 
+ # geom_bar(stat="identity") +
+#  facet_wrap(vars(Site), nrow = 11)
+
+```
 
 
 ### Question 1c: Are there rivers that are scary we aren't talking about? (high and type of analyte)
 
+```{r}
+
+# starting to look the same as 1b -- which sites had the higher analytes
+
+```
 
 ### Question 1d: [Tay] Are any spots with one analyte over 70? over 30?
 
@@ -76,7 +134,31 @@ source_analyte_above_70 <-
 unique(source_analyte_above_30$Site) #11 Sites above 30 
 unique(source_analyte_above_70$Site) #5 sites above 70
 
-```
+
+
+pfoapfos.source <- 
+  ggplot(PFAS_wide_clean, aes(x = Site, y = sum_pfoa.pfos)) +
+  geom_hline(yintercept = 70, lty = 2) +
+  geom_point(alpha = 0.5, size = 1.5) +
+  ylim(0,150) +
+  ylab(expression("PPT")) +
+  theme(axis.text.x = element_blank())
+
+total.source <- 
+  ggplot(PFAS_wide_clean, aes(x = Site, y = sum_pfas)) +
+  geom_hline(yintercept = 20, lty = 2) +
+  geom_hline(yintercept = 70, lty = 2) +
+  geom_point(alpha = 0.5, size = 1.5) +
+  ylim(0,150) +
+  ylab(expression("PPT")) +
+  theme(axis.text.x = element_blank())
+
+print(pfoapfos.source)
+
+print(total.source)
+
+
+☻```
 
 
 ### Question 1e: [Tay] Total PFAS over 130
@@ -120,11 +202,11 @@ PFAS_wide_sum
 
 ### Question 1f: Temporal relationships?
 
+```{r}
 
+# no, because only sampled on one day
 
-
-
-
+```
 
 
 ## Question 2: Source Data ND/Qualifiers
@@ -141,12 +223,16 @@ PFAS_wide_sum
 
 ### Question 2b: [Tay] Percentages (how many ND / total detections under 30) within any. Within GenX. See how many of which analytes have the worst percentage rations --> play with those trends
 
+```{r}
+
+```
+
 
 ### Question 2c: [Tay] ND: Variability of lab qualifiers (know the level is above/below U) - by analyte per Source
 
+```{r}
 
-
-
+```
 
 
 
@@ -211,18 +297,24 @@ unique(wwtp_analyte_above_70$Site) #13 sites above 70
 
 
 
-
-
-
-
 ## Question 4: WWTP ND/Qualifiers
 
 ### Question 4a: [Tay] Summary Stats: ND below 5; ND below 10; ND below 20 (distrubtion bell curve)
 
+```{r}
+
+```
 
 ### Question 4b: [Tay] Percentages (how many ND / total detections under 30) within any. Within GenX. See how many of which analytes have the worst percentage rations --> play with those trends
 
+```{r}
+
+```
 
 ### Question 4c: [Tay] ND: Variability of lab qualifiers (know the level is above/below U) - by analyte per WWTP
+
+```{r}
+
+```
 
 
