@@ -52,27 +52,41 @@ PFAS_wide_combined <- full_join(PFAS_wide_wwtp, PFAS_source_wide)
 # if doing through R, remember to add sum PFOA/PFOS and total PFAS columns
 ```
 ```{r}
+### DONT RUN UNTIL FIX SCRIPT
+
 ## PFAS wide needs site type
 
 long_site <- 
   PFAS_long %>%
   select(Type, Site)
 
-PFAS_wide_clean <- left_join(long_site, PFAS_wide_combined, by = "Site")
+long_distict_site <-
+  long_site %>% distinct()
+
+### HELP THIS ISN'T WORKING
+PFAS_wide_combined <- 
+  semi_join(long_site, PFAS_wide_combined, by = "Site")
+
+# Until the join works, use manual excel (brought in the beginning)
 
 ```
 
 
 ```{r}
-
+#convert dates
 PFAS_long$Sample.Date <- mdy(PFAS_long$Sample.Date)
-PFAS_wide_clean$Sample.Date <- mdy(PFAS_wide_clean$Sample.Date)
 
+PFAS_wide_combined$Sample.Date <- mdy(PFAS_wide_combined$Sample.Date)
+
+```
+```{r}
 # remove Sum and Total rows
 PFAS_long <- PFAS_long[!grepl("Sum",PFAS_long$Analyte),]
 PFAS_long <- PFAS_long[!grepl("Total",PFAS_long$Analyte),]
+```
 
-# only keep the analytes we care about
+```{r}
+# only keep the analytes we care about in long
 
 #unique(PFAS_clean$Analyte)
 
@@ -88,7 +102,6 @@ PFAS_long <- PFAS_long[!grepl("Total",PFAS_long$Analyte),]
 PFAS_long_clean <-
   PFAS_long %>%
   filter(Analyte %in% c("PFBA", "PFBS", "PFDS", "PFDA", "PFDoA", "PFHpS", "PFHpA", "PFHxS", "PFHxA", "PFNS", "PFNA", "PFOSA", "N-EtFOSAA", "N-MeFOSAA", "PFPeS", "PFPeA", "PFTeA", "PFTriA", "PFUnA", "HFPO-DA", "PFOA", "PFOS"))
-
 ```
 
 # chain lengths
@@ -105,14 +118,6 @@ PFAS_long_clean <- PFAS_long_clean %>%
 
 ```
 
-
-```{r}
-
-
-```
-
-
-
 # still to do
 ## PFAS long needs lat/long
 
@@ -123,11 +128,11 @@ PFAS_long_clean <- PFAS_long_clean %>%
 
 # bound PFAS_wide
 
-write.csv(PFAS_wide_clean, row.names=FALSE, file = "../Data/Processed/PFAS_wide_clean.csv")
+write.csv(PFAS_wide_combined, row.names=FALSE, file = "./Data/Processed/PFAS_wide_clean.csv")
 
 # PFAS_clean(er)
 
-write.csv(PFAS_long_clean, row.names=FALSE, file = "../Data/Processed/PFAS_long_clean.csv")
+write.csv(PFAS_long_clean, row.names=FALSE, file = "./Data/Processed/PFAS_long_clean.csv")
 
 ```
 
