@@ -171,6 +171,20 @@ Total_PFAS_Source_Over130 <-
   filter (sum_pfas > 130)
 
 unique(Total_PFAS_Source_Over130$Site)
+
+#Plotting sites above 130
+source_total_pfas_130_plot <- 
+  ggplot(Total_PFAS_Source_Over130, aes(x = Sample.Date, y = sum_pfas, color = Site)) +
+  geom_point(alpha = 0.7, size = 5)+
+  theme(axis.text.x = element_text(angle = 45, hjust = 1))+
+  theme(axis.text.x = element_text(size = 7))+
+  geom_hline(yintercept = 130, lty = 2)+
+  scale_y_continuous(breaks=c(130, 200, 400, 600, 800, 1200))+
+  theme(legend.position = "right", 
+        legend.text = element_text(size = 5), legend.title = element_text(size = 12))+
+  xlab("Sample Date")+
+  ylab("Total PFAS (ppt)")
+print(source_total_pfas_130_plot + ggtitle("Source Sites with Total PFAS Above 130 ppt"))
 ```
 
 ### Question 1f: Temporal relationships?
@@ -290,6 +304,20 @@ Total_PFAS_WWTP_Over130 <-
   filter (sum_pfas > 130)
 
 unique(Total_PFAS_Source_Over130$Site)
+
+#Plotting sites above 130
+wwtp_total_pfas_130_plot <- 
+  ggplot(Total_PFAS_WWTP_Over130, aes(x = Sample.Date, y = sum_pfas, color = Site)) +
+  geom_point(alpha = 0.7, size = 5)+
+  theme(axis.text.x = element_text(angle = 45, hjust = 1))+
+  theme(axis.text.x = element_text(size = 7))+
+  geom_hline(yintercept = 130, lty = 2)+
+  scale_y_continuous(breaks=c(130, 400, 600, 800, 1200, 1800, 2400))+
+  theme(legend.position = "right", 
+        legend.text = element_text(size = 6), legend.title = element_text(size = 12))+
+  xlab("Sample Date")+
+  ylab("Total PFAS (ppt)")
+print(wwtp_total_pfas_130_plot + ggtitle("WWTP Sites with Total PFAS Above 130 ppt"))
 ```
 
 
