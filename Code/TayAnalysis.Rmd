@@ -128,6 +128,26 @@ source_analyte_above_70 <-
 unique(source_analyte_above_30$Site) #11 Sites above 30 
 unique(source_analyte_above_70$Site) #5 sites above 70
 
+#Plotting the sites with more than 30/70
+source_analyte_30_plot <- 
+  ggplot(source_analyte_above_30, aes(x = Site, y = ppt, color = Site)) +
+  geom_boxplot()+
+  theme(legend.position = "none")+
+  theme(axis.text.x = element_text(angle = 45, hjust = 1))+
+  theme(axis.text.x = element_text(size = 7))+
+  geom_hline(yintercept = 30, lty = 2)+
+  scale_y_continuous(breaks=c(30, 100, 200, 300, 400, 500, 600))
+print(source_analyte_30_plot + ggtitle("Source sites with Analytes above 30 ppt"))
+
+source_analyte_70_plot <- 
+  ggplot(source_analyte_above_70, aes(x = Site, y = ppt, color = Site)) +
+  geom_boxplot()+
+  theme(legend.position = "none")+
+  theme(axis.text.x = element_text(angle = 45, hjust = 1))+
+  theme(axis.text.x = element_text(size = 7))+
+  geom_hline(yintercept = 70, lty = 2)+
+  scale_y_continuous(breaks=c(70, 100, 200, 300, 400, 500, 600))
+print(source_analyte_70_plot + ggtitle("Source sites with Analytes above 70 ppt"))
 ```
 
 
@@ -141,33 +161,30 @@ unique(source_analyte_above_70$Site) #5 sites above 70
 # filter for those over 130
 # unique for how many sites had total pfas over 130
 
+#Source by Site and Date with sum PFAS above 130
 Total_PFAS_Source_Over130 <- 
-  PFAS_wide_clean %>%
+  PFAS_long_clean[!is.na(PFAS_long_clean$ppt),] %>%
   filter (Type == "Source") %>%
+  filter(Analyte == "PFBA"| Analyte == "PFBS" | Analyte == "PFDS" | Analyte == "PFDA" | Analyte == "PFDoA" | Analyte == "PFHpS" | Analyte == "PFHpA" | Analyte == "PFHxS" | Analyte == "PFHxA" | Analyte == "PFNS" | Analyte == "PFNA" | Analyte == "PFOSA" | Analyte == "N.EtFOSAA" | Analyte == "N.MeFOSAA" | Analyte == "PFPeS" | Analyte == "PFPeA" | Analyte == "PFTeA" | Analyte == "PFTriA" | Analyte == "PFUnA" | Analyte == "HFPO.DA" | Analyte == "PFOA" | Analyte == "PFOS") %>%
+  group_by(Site, Sample.Date)%>%
+  summarise(sum_pfas = sum(ppt))%>%
   filter (sum_pfas > 130)
 
-## hey, Tay. Do this. Please :) 
+unique(Total_PFAS_Source_Over130$Site)
 
-# rename without dashes
-
-rename(PFAS_wide_clean, petal_length = Petal.Length)
-
-PFAS_wide_clean <-
-  PFAS_wide_clean %>%
-  mutate(TotalPFAS = (PFBA + PFBS + PFDS + PFDA + PFDoA + PFHpS + PFHpA + PFHxS + PFHxA + PFNS + PFNA + PFOSA + N.EtFOSAA + N.MeFOSAA + PFPeS + PFPeA + PFTeA + PFTriA + PFUnA + HFPO.DA + PFOA + PFOS), na.rm=TRUE)
-
-PFAS_wide_sum <-
-  PFAS_wide_clean %>%
-  mutate(TotalPFAS = (PFBA + PFBS + PFDS + PFDA + PFDoA + PFHpS + PFHpA + PFHxS + PFHxA + PFNS + PFNA + PFOSA + N.EtFOSAA + N.MeFOSAA + PFPeS + PFPeA + PFTeA + PFTriA + PFUnA + HFPO.DA + PFOA + PFOS, na.rm=TRUE))
-
-PFAS_wide_sum <-
-  PFAS_wide_clean %>%
-  mutate(TotalPFAS = sum(PFBA:PFOS, na.rm=TRUE))
-
-PFAS_wide_sum
-
-#YAY! Got it!
-
+#Plotting sites above 130
+source_total_pfas_130_plot <- 
+  ggplot(Total_PFAS_Source_Over130, aes(x = Sample.Date, y = sum_pfas, color = Site)) +
+  geom_point(alpha = 0.7, size = 5)+
+  theme(axis.text.x = element_text(angle = 45, hjust = 1))+
+  theme(axis.text.x = element_text(size = 7))+
+  geom_hline(yintercept = 130, lty = 2)+
+  scale_y_continuous(breaks=c(130, 200, 400, 600, 800, 1200))+
+  theme(legend.position = "right", 
+        legend.text = element_text(size = 5), legend.title = element_text(size = 12))+
+  xlab("Sample Date")+
+  ylab("Total PFAS (ppt)")
+print(source_total_pfas_130_plot + ggtitle("Source Sites with Total PFAS Above 130 ppt"))
 ```
 
 ### Question 1f: Temporal relationships?
@@ -239,7 +256,6 @@ PFAS_wide_sum
 ### Question 3e: [Tay] Are any spots with one analyte over 70? over 30?
 
 ```{r}
-
 wwtp_analyte_above_30 <- 
   PFAS_long_clean %>%
   filter(Type == "WWTP") %>%
@@ -253,12 +269,55 @@ wwtp_analyte_above_70 <-
 unique(wwtp_analyte_above_30$Site) #21 Sites above 30 
 unique(wwtp_analyte_above_70$Site) #13 sites above 70
 
+#Plotting WWTP anayltes over the ppt standards
+wwtp_analyte_30_plot <- 
+  ggplot(wwtp_analyte_above_30, aes(x = Site, y = ppt, color = Site)) +
+  geom_boxplot()+
+  theme(legend.position = "none")+
+  theme(axis.text.x = element_text(angle = 45, hjust = 1))+
+  theme(axis.text.x = element_text(size = 7))+
+  geom_hline(yintercept = 30, lty = 2)+
+  scale_y_continuous(breaks=c(30, 100, 200, 400, 800, 1000))
+print(wwtp_analyte_30_plot + ggtitle("WWTP sites with Analytes above 30 ppt"))
+
+wwtp_analyte_70_plot <- 
+  ggplot(wwtp_analyte_above_70, aes(x = Site, y = ppt, color = Site)) +
+  geom_boxplot()+
+  theme(legend.position = "none")+
+  theme(axis.text.x = element_text(angle = 45, hjust = 1))+
+  theme(axis.text.x = element_text(size = 7))+
+  geom_hline(yintercept = 70, lty = 2)+
+  scale_y_continuous(breaks=c(70, 200, 400, 800, 1000))
+print(wwtp_analyte_70_plot + ggtitle("WWTP sites with Analytes above 70 ppt"))
 ```
 
-### Question 1e: [Tay] Total PFAS over 130
+### Question 3f: [Tay] Total PFAS over 130
 
 ```{r}
+#WWTP by Site and Date with sum PFAS above 130
+Total_PFAS_WWTP_Over130 <- 
+  PFAS_long_clean[!is.na(PFAS_long_clean$ppt),] %>%
+  filter (Type == "WWTP") %>%
+  filter(Analyte == "PFBA"| Analyte == "PFBS" | Analyte == "PFDS" | Analyte == "PFDA" | Analyte == "PFDoA" | Analyte == "PFHpS" | Analyte == "PFHpA" | Analyte == "PFHxS" | Analyte == "PFHxA" | Analyte == "PFNS" | Analyte == "PFNA" | Analyte == "PFOSA" | Analyte == "N.EtFOSAA" | Analyte == "N.MeFOSAA" | Analyte == "PFPeS" | Analyte == "PFPeA" | Analyte == "PFTeA" | Analyte == "PFTriA" | Analyte == "PFUnA" | Analyte == "HFPO.DA" | Analyte == "PFOA" | Analyte == "PFOS") %>%
+  group_by(Site, Sample.Date)%>%
+  summarise(sum_pfas = sum(ppt))%>%
+  filter (sum_pfas > 130)
 
+unique(Total_PFAS_Source_Over130$Site)
+
+#Plotting sites above 130
+wwtp_total_pfas_130_plot <- 
+  ggplot(Total_PFAS_WWTP_Over130, aes(x = Sample.Date, y = sum_pfas, color = Site)) +
+  geom_point(alpha = 0.7, size = 5)+
+  theme(axis.text.x = element_text(angle = 45, hjust = 1))+
+  theme(axis.text.x = element_text(size = 7))+
+  geom_hline(yintercept = 130, lty = 2)+
+  scale_y_continuous(breaks=c(130, 400, 600, 800, 1200, 1800, 2400))+
+  theme(legend.position = "right", 
+        legend.text = element_text(size = 6), legend.title = element_text(size = 12))+
+  xlab("Sample Date")+
+  ylab("Total PFAS (ppt)")
+print(wwtp_total_pfas_130_plot + ggtitle("WWTP Sites with Total PFAS Above 130 ppt"))
 ```
 
 
