@@ -273,6 +273,26 @@ wwtp_analyte_above_70 <-
 unique(wwtp_analyte_above_30$Site) #21 Sites above 30 
 unique(wwtp_analyte_above_70$Site) #13 sites above 70
 
+#Plotting WWTP anayltes over the ppt standards
+wwtp_analyte_30_plot <- 
+  ggplot(wwtp_analyte_above_30, aes(x = Site, y = ppt, color = Site)) +
+  geom_boxplot()+
+  theme(legend.position = "none")+
+  theme(axis.text.x = element_text(angle = 45, hjust = 1))+
+  theme(axis.text.x = element_text(size = 7))+
+  geom_hline(yintercept = 30, lty = 2)+
+  scale_y_continuous(breaks=c(30, 100, 200, 400, 800, 1000))
+print(wwtp_analyte_30_plot + ggtitle("WWTP sites with Analytes above 30 ppt"))
+
+wwtp_analyte_70_plot <- 
+  ggplot(wwtp_analyte_above_70, aes(x = Site, y = ppt, color = Site)) +
+  geom_boxplot()+
+  theme(legend.position = "none")+
+  theme(axis.text.x = element_text(angle = 45, hjust = 1))+
+  theme(axis.text.x = element_text(size = 7))+
+  geom_hline(yintercept = 70, lty = 2)+
+  scale_y_continuous(breaks=c(70, 200, 400, 800, 1000))
+print(wwtp_analyte_70_plot + ggtitle("WWTP sites with Analytes above 70 ppt"))
 ```
 
 ### Question 1e: [Tay] Total PFAS over 130
