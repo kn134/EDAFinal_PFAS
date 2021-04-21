@@ -161,33 +161,16 @@ print(source_analyte_70_plot + ggtitle("Source sites with Analytes above 70 ppt"
 # filter for those over 130
 # unique for how many sites had total pfas over 130
 
+#Source by Site and Date with sum PFAS above 130
 Total_PFAS_Source_Over130 <- 
-  PFAS_wide_clean %>%
+  PFAS_long_clean[!is.na(PFAS_long_clean$ppt),] %>%
   filter (Type == "Source") %>%
+  filter(Analyte == "PFBA"| Analyte == "PFBS" | Analyte == "PFDS" | Analyte == "PFDA" | Analyte == "PFDoA" | Analyte == "PFHpS" | Analyte == "PFHpA" | Analyte == "PFHxS" | Analyte == "PFHxA" | Analyte == "PFNS" | Analyte == "PFNA" | Analyte == "PFOSA" | Analyte == "N.EtFOSAA" | Analyte == "N.MeFOSAA" | Analyte == "PFPeS" | Analyte == "PFPeA" | Analyte == "PFTeA" | Analyte == "PFTriA" | Analyte == "PFUnA" | Analyte == "HFPO.DA" | Analyte == "PFOA" | Analyte == "PFOS") %>%
+  group_by(Site, Sample.Date)%>%
+  summarise(sum_pfas = sum(ppt))%>%
   filter (sum_pfas > 130)
 
-## hey, Tay. Do this. Please :) 
-
-# rename without dashes
-
-rename(PFAS_wide_clean, petal_length = Petal.Length)
-
-PFAS_wide_clean <-
-  PFAS_wide_clean %>%
-  mutate(TotalPFAS = (PFBA + PFBS + PFDS + PFDA + PFDoA + PFHpS + PFHpA + PFHxS + PFHxA + PFNS + PFNA + PFOSA + N.EtFOSAA + N.MeFOSAA + PFPeS + PFPeA + PFTeA + PFTriA + PFUnA + HFPO.DA + PFOA + PFOS), na.rm=TRUE)
-
-PFAS_wide_sum <-
-  PFAS_wide_clean %>%
-  mutate(TotalPFAS = (PFBA + PFBS + PFDS + PFDA + PFDoA + PFHpS + PFHpA + PFHxS + PFHxA + PFNS + PFNA + PFOSA + N.EtFOSAA + N.MeFOSAA + PFPeS + PFPeA + PFTeA + PFTriA + PFUnA + HFPO.DA + PFOA + PFOS, na.rm=TRUE))
-
-PFAS_wide_sum <-
-  PFAS_wide_clean %>%
-  mutate(TotalPFAS = sum(PFBA:PFOS, na.rm=TRUE))
-
-PFAS_wide_sum
-
-#YAY! Got it!
-
+unique(Total_PFAS_Source_Over130$Site)
 ```
 
 ### Question 1f: Temporal relationships?
@@ -259,7 +242,6 @@ PFAS_wide_sum
 ### Question 3e: [Tay] Are any spots with one analyte over 70? over 30?
 
 ```{r}
-
 wwtp_analyte_above_30 <- 
   PFAS_long_clean %>%
   filter(Type == "WWTP") %>%
@@ -295,10 +277,19 @@ wwtp_analyte_70_plot <-
 print(wwtp_analyte_70_plot + ggtitle("WWTP sites with Analytes above 70 ppt"))
 ```
 
-### Question 1e: [Tay] Total PFAS over 130
+### Question 3f: [Tay] Total PFAS over 130
 
 ```{r}
+#WWTP by Site and Date with sum PFAS above 130
+Total_PFAS_WWTP_Over130 <- 
+  PFAS_long_clean[!is.na(PFAS_long_clean$ppt),] %>%
+  filter (Type == "WWTP") %>%
+  filter(Analyte == "PFBA"| Analyte == "PFBS" | Analyte == "PFDS" | Analyte == "PFDA" | Analyte == "PFDoA" | Analyte == "PFHpS" | Analyte == "PFHpA" | Analyte == "PFHxS" | Analyte == "PFHxA" | Analyte == "PFNS" | Analyte == "PFNA" | Analyte == "PFOSA" | Analyte == "N.EtFOSAA" | Analyte == "N.MeFOSAA" | Analyte == "PFPeS" | Analyte == "PFPeA" | Analyte == "PFTeA" | Analyte == "PFTriA" | Analyte == "PFUnA" | Analyte == "HFPO.DA" | Analyte == "PFOA" | Analyte == "PFOS") %>%
+  group_by(Site, Sample.Date)%>%
+  summarise(sum_pfas = sum(ppt))%>%
+  filter (sum_pfas > 130)
 
+unique(Total_PFAS_Source_Over130$Site)
 ```
 
 
