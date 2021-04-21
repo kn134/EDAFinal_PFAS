@@ -61,28 +61,26 @@ Each figure should be accompanied by a caption, and each figure should be refere
 
 #chain_short <- c(PFBA, PFBS,PFHpA,PFHxA,PFPeS,PFPeA)
 
-PFAS_wide_clean <- 
-    PFAS_wide_clean %>% 
-    rowwise() %>% 
-    mutate(short.ppt = sum(PFBA, PFBS, PFHpA, PFHxA, PFPeS, PFPeA, na.rm = TRUE)) %>%
-    mutate(long.ppt = sum(PFDS, PFDA, PFDoA, PFHpS, PFHxS, PFNS, PFNA, PFOSA, N.EtFOSAA, N.MeFOSAA, PFTeA, PFTriA, PFUnA, HFPO.DA, PFOA, PFOS, na.rm = TRUE))
+#should be in wrangle
+#PFAS_wide_clean <- 
+#    PFAS_wide_clean %>% 
+#    rowwise() %>% 
+#    mutate(short.ppt = sum(PFBA, PFBS, PFHpA, PFHxA, PFPeS, PFPeA, na.rm = TRUE)) %>%
+#    mutate(long.ppt = sum(PFDS, PFDA, PFDoA, PFHpS, PFHxS, PFNS, PFNA, PFOSA, N.EtFOSAA, N.MeFOSAA, PFTeA, PFTriA, PFUnA, HFPO.DA, PFOA, PFOS, na.rm = TRUE))
   
-# stacked histogram ppt vs site
+# group by chain length
+pfas_chain_group <-
+  PFAS_long_clean %>%
+  drop_na(ppt) %>%
+  group_by(Type, Site, chain.length) %>%
+  summarise(ppt = sum(ppt))
 
-Site <- PFAS_wide_clean$Site
-short.ppt <- PFAS_wide_clean$short.ppt
-long.ppt <- PFAS_wide_clean$long.ppt
-
-df2 <- rbind(data.frame(Site, "ppt" = short.ppt, "Chain"="Short"), data.frame(Site, "ppt" = long.ppt, "Chain"="Long"))
-
-ggplot(df2, aes(x = Site, y = ppt))+
-  geom_col(aes(fill = Chain))
-
-
-# histogram by long chain, maybe color it later
-
-ggplot(PFAS_long_clean, aes(fill=Analyte, y=ppt, x=Site)) + 
-    geom_bar(position="stack", stat="identity")
+# bar plot stacked
+ggplot(subset(pfas_chain_group, Type == "Source"), aes(x = Site, y = ppt))+
+  geom_col(aes(fill = chain.length)) +
+  labs(fill = "Chain Length") +
+  theme(axis.text.x=element_blank(),
+        axis.ticks.x=element_blank())
 
 ```
 
@@ -90,18 +88,13 @@ ggplot(PFAS_long_clean, aes(fill=Analyte, y=ppt, x=Site)) +
 
 ```{r}
 
-# facet wrap each site by x = analyte y = ppt
+# plot analytes by site shows the only analytes worth knowing
 
-# looks terrible.
-
-ggplot(subset(PFAS_long_clean, Type == "Source"), aes(x = Analyte, y = ppt)) + 
-  geom_bar(stat="identity") +
-  facet_wrap(vars(Site), nrow = 11)
-
-# !is.na does nothing
-#ggplot(subset(PFAS_long_clean, Type == "Source", !is.na(ppt)), aes(x = Analyte, y = ppt)) + 
- # geom_bar(stat="identity") +
-#  facet_wrap(vars(Site), nrow = 11)
+ggplot(subset(PFAS_long_clean, Type == "Source"), aes(fill=Analyte, y=ppt, x=Site)) +     geom_bar(position="stack", stat="identity") +
+    labs(fill = "Analyte") +
+    theme(axis.text.x=element_blank(),
+        axis.ticks.x=element_blank()) +
+  xlab("Source Sites")
 
 ```
 
@@ -110,7 +103,29 @@ ggplot(subset(PFAS_long_clean, Type == "Source"), aes(x = Analyte, y = ppt)) +
 
 ```{r}
 
-# starting to look the same as 1b -- which sites had the higher analytes
+# PROBLEM: wide dataset shows 8 sites with PFAS, long shows 11
+
+# decide top sites to plot
+
+topsites <-
+  PFAS_wide_clean %>%
+  filter(Type =="Source") %>%
+  select(Type, Site, TotalPFAS)
+
+
+topsites <- topsites[with(topsites,order(-TotalPFAS)),]
+
+topsites <- topsites[1:8,]
+
+
+# facet wrap each site by x = analyte y = ppt
+
+ggplot(topsites, aes(x = Site, y = TotalPFAS)) + 
+  geom_bar(stat="identity") +
+  facet_wrap(vars(Site), nrow = 5) +
+  ylab("Total PFAS (ppt)") +
+  theme(axis.text.x=element_blank(),
+        axis.ticks.x=element_blank()) 
 
 ```
 
@@ -200,15 +215,6 @@ PFAS_wide_sum
 
 ```
 
-### Question 1f: Temporal relationships?
-
-```{r}
-
-# no, because only sampled on one day
-
-```
-
-
 ## Question 2: Source Data ND/Qualifiers
 
 ### Question 2a: [Tay] Summary Stats: ND below 5; ND below 10; ND below 20 (distrubtion bell curve)
@@ -238,24 +244,68 @@ PFAS_wide_sum
 
 ## Question 3: WWTP Analytes
 
-### Question 3a: PFOA, PFOS, GenX, sum PFAS accross sites (by month, facet wrap)
+### Question 3a: PFOA, PFOS, GenX, sum PFAS accross sites
 
 ```{r}
 
 
+# tried facet wrap
+
+wwtp_pfoa.pfos.genx <-
+  PFAS_long_clean %>%
+  filter(Analyte %in% c("PFOA", "PFOS", "HFPO-DA")) %>%
+  filter(Type =="WWTP")
+
+# add month column
+wwtp_pfoa.pfos.genx$Sample.Date <-
+  ymd(wwtp_pfoa.pfos.genx$Sample.Date)
+
+wwtp_pfoa.pfos.genx <- 
+  mutate(wwtp_pfoa.pfos.genx, month = month(Sample.Date)) 
+
+#facet wrap by month
+
+ggplot(wwtp_pfoa.pfos.genx, aes(x=Analyte, y=ppt)) +
+  geom_bar(position="stack", stat="identity") +
+  facet_grid(Site ~ month)
+
+# fewer sites
+
+
+### TRY 2 -- need to convert HFPO-DA to HFPO.DA and run again
+
+ggplot(wwtp_pfoa.pfos.genx, aes(x = Site, y = ppt))+
+  geom_col(aes(fill = Analyte)) +
+  labs(fill = "Analyte") +
+  ylim(0,4500) +
+  xlab("WWTP Site") +
+  theme(axis.text.x=element_blank(),
+        axis.ticks.x=element_blank())
 
 ```
 
 
-### Question 3b: Top 3? 5? analytes (aka are there analytes we aren't looking at) -- by chain length
+### Question 3b: Top analytes (aka are there analytes we aren't looking at)
 ```{r}
 
+# plot analytes by site shows the only analytes worth knowing
 
-```
+ggplot(subset(PFAS_long_clean, Type == "WWTP"), aes(fill=Analyte, y=ppt, x=Site)) +     geom_bar(position="stack", stat="identity") +
+    labs(fill = "Analyte") +
+    theme(axis.text.x=element_blank(),
+        axis.ticks.x=element_blank()) +
+  xlab("WWTP Sites")
 
+# summarise  by column and get highest mean value
 
-### Question 3c: Within a plant, is there a temporal trend (facet_wrap; 25 rows)
-```{r}
+mean_analyte <-
+  colMeans(PFAS_wide_clean[sapply(PFAS_wide_clean, is.numeric)], na.rm=TRUE) 
+
+mean_analyte <- data.frame(mean_analyte)
+
+mean_analyte <-
+  mean_analyte %>%
+  filter(lakename == "Paul Lake" | lakename == "Peter Lake")
 
 ```
 
@@ -264,6 +314,21 @@ PFAS_wide_sum
 
 ```{r}
 
+
+# group by chain length in Q1
+# pfas_chain_group <-
+  #PFAS_long_clean %>%
+  #drop_na(ppt) %>%
+  #group_by(Type, Site, chain.length) %>%
+  #summarise(ppt = sum(ppt))
+
+# bar plot stacked
+ggplot(subset(pfas_chain_group, Type == "WWTP"), aes(x = Site, y = ppt))+
+  geom_col(aes(fill = chain.length)) +
+  labs(fill = "Chain Length") +
+  xlab("WWTP Site") +
+  theme(axis.text.x=element_blank(),
+        axis.ticks.x=element_blank())
 
 
 ```
