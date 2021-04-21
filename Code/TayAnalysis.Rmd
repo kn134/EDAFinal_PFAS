@@ -128,6 +128,26 @@ source_analyte_above_70 <-
 unique(source_analyte_above_30$Site) #11 Sites above 30 
 unique(source_analyte_above_70$Site) #5 sites above 70
 
+#Plotting the sites with more than 30/70
+source_analyte_30_plot <- 
+  ggplot(source_analyte_above_30, aes(x = Site, y = ppt, color = Site)) +
+  geom_boxplot()+
+  theme(legend.position = "none")+
+  theme(axis.text.x = element_text(angle = 45, hjust = 1))+
+  theme(axis.text.x = element_text(size = 7))+
+  geom_hline(yintercept = 30, lty = 2)+
+  scale_y_continuous(breaks=c(30, 100, 200, 300, 400, 500, 600))
+print(source_analyte_30_plot + ggtitle("Source sites with Analytes above 30 ppt"))
+
+source_analyte_70_plot <- 
+  ggplot(source_analyte_above_70, aes(x = Site, y = ppt, color = Site)) +
+  geom_boxplot()+
+  theme(legend.position = "none")+
+  theme(axis.text.x = element_text(angle = 45, hjust = 1))+
+  theme(axis.text.x = element_text(size = 7))+
+  geom_hline(yintercept = 70, lty = 2)+
+  scale_y_continuous(breaks=c(70, 100, 200, 300, 400, 500, 600))
+print(source_analyte_70_plot + ggtitle("Source sites with Analytes above 70 ppt"))
 ```
 
 
