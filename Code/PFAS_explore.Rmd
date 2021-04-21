@@ -110,7 +110,7 @@ ggplot(PFAS_long_clean) +
   geom_freqpoly(aes(x = ppt, color = Analyte), bins = 50) +
   scale_x_continuous(limits = c(0, 250)) +
   theme(legend.position = "top") +
-  labs(x = "Analyte", y = "Number of Samples")
+  labs(x = "PPT", y = "Number of Samples")
 
 ```
 

@@ -83,6 +83,7 @@ PFAS_wide_combined$Sample.Date <- mdy(PFAS_wide_combined$Sample.Date)
 # remove Sum and Total rows
 PFAS_long <- PFAS_long[!grepl("Sum",PFAS_long$Analyte),]
 PFAS_long <- PFAS_long[!grepl("Total",PFAS_long$Analyte),]
+
 ```
 
 ```{r}
@@ -116,7 +117,24 @@ chain.length.function <- function(x){
 PFAS_long_clean <- PFAS_long_clean %>%
   mutate(chain.length = chain.length.function(Analyte)) 
 
+# make chain length in wide data set
+PFAS_wide_clean <- 
+    PFAS_wide_clean %>% 
+    rowwise() %>% 
+    mutate(short.ppt = sum(PFBA, PFBS, PFHpA, PFHxA, PFPeS, PFPeA, na.rm = TRUE)) %>%
+    mutate(long.ppt = sum(PFDS, PFDA, PFDoA, PFHpS, PFHxS, PFNS, PFNA, PFOSA, N.EtFOSAA, N.MeFOSAA, PFTeA, PFTriA, PFUnA, HFPO.DA, PFOA, PFOS, na.rm = TRUE))
+
 ```
+
+```{r}
+
+# add Total PFAS to wide
+
+PFAS_wide_clean <- PFAS_wide_combined %>%
+  mutate(TotalPFAS = sum(short.ppt, long.ppt, na.rm=TRUE)) 
+
+```
+
 
 # still to do
 ## PFAS long needs lat/long
@@ -128,7 +146,7 @@ PFAS_long_clean <- PFAS_long_clean %>%
 
 # bound PFAS_wide
 
-write.csv(PFAS_wide_combined, row.names=FALSE, file = "./Data/Processed/PFAS_wide_clean.csv")
+write.csv(PFAS_wide_clean, row.names=FALSE, file = "./Data/Processed/PFAS_wide_clean.csv")
 
 # PFAS_clean(er)
 
