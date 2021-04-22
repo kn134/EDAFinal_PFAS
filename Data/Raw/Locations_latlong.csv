@@ -1,71 +1,71 @@
-Type,Location,lat,long,treatment
-WWTP,City.of.Asheboro.WWTP,35.76613469,-79.78579884,
-WWTP,Northeast.Brunswick.Regional,34.27175034,-78.0055035,
-WWTP,Town.of.Burgaw.Collection.System,34.55726739,-77.92518487,
-WWTP,East.Burlington.WWTP,36.09382721,-79.37771112,
-WWTP,South.Burlington.WWTP,36.02454813,-79.36944141,
-WWTP,Wilmington-James.A.Loughlin(Northside).WWTP,34.26246994,-77.92142112,
-WWTP,Wilmington-M'Kean.Maffitt(Southside).WWTP,34.16600449,-77.94528851,
-WWTP,Cary.Western.Wake.Regional.Water.Reclamation.Facility,35.67154993,-78.94119022,
-WWTP,Cit.of.Clinton-Norman.H.Larkins.WWTP,35.00515516,-78.34442384,
-WWTP,Columbus.County.WWTP,34.3289896,-78.67922923,
-WWTP,City.of.Durham-South.Durham.Water.Reclamation,35.90402079,-78.97846588,
-WWTP,Durham.County.Triangle.Wastewater.Treatment.Plant,35.8802467,-78.8932025,
-WWTP,Fayetteville-Cross.Creek.WWTP,35.05953494,-78.86003082,
-WWTP,Fayetteville-Rockfish.Creek.WWTP,34.96435311,-78.83344791,
-WWTP,City.of.Graham,36.04983302,-79.37369128,
-WWTP,Greensboro-TZ.Osborne.WRF,36.09864301,-79.68893648,
-WWTP,North.Harnett.Regional,35.40727843,-78.8203801,
-WWTP,City.of.High.Point.Eastside.WWTP,35.94262001,-79.90908086,
-WWTP,Town.of.Holly.Springs,35.64598133,-78.85109368,
-WWTP,City.of.Mebane.WWTP,36.08862094,-79.28544925,
-WWTP,City.of.Raeford,34.97691246,-79.1947716,
-WWTP,Town.of.Ramseur.WWTP,35.72183182,-79.65364379,
-WWTP,City.of.Randleman,35.80812458,-79.78271331,
-WWTP,Town.of.Rose.Hill.WWTP,34.81715622,-78.00565245,
-WWTP,Sanford-Big.Buffalo.Creek.WWTP,35.54719755,-79.21987282,
-WWTP,Siler.City.Waste.Water.Treatment.Plant,35.72833511,-79.42704286,
-WWTP,Wallace.Regional.WWTP,34.73817439,-77.99263394,
-SupRes,Blowing Rock Town Pond,36.142932,-81.672783,
-SupRes,Boone ASU Lake,36.23912,-81.67036,
-SupRes,"Buckeye Lake, Beech Mtn",36.219191,-81.907021,
-SupRes,Buckhorn Dam Lake Upstream of Dam,35.549187,-79.025086,
-SupRes,"Cane Creek Reservoir at Dam nr Oaks, NC",35.94955,-79.24155,
-SupRes,"Carthage City Lake at Dam NR Carthage, NC",35.33205,-79.40977,
-SupRes,"City Lake, High Point",35.99615,-79.94499,
-SupRes,Ellerbe Creek @ SR 1636,36.05949,-78.83224,
-SupRes,Eno River @ SR 1004,36.07254,-78.8627,
-SupRes,Fall Lake @ I-85 near Northside NC,36.07024,-78.77945,
-SupRes,Falls Lake @ Channel Marker #6 near Bayleaf NC,36.00507,-78.64668,
-SupRes,Falls Lake @ Marker #1 near Bayleaf NC,35.95591,-78.58444,
-SupRes,Falls Lake @ Mouth Ledge Creek near Creedmoor NC,36.0222,-78.68529,
-SupRes,Falls Lake @ Mth Little Lick Creek near Marker #13,36.01799,-78.73492,
-SupRes,Flat River @ SR 1004,36.1318600000 ,-78.82784,
-SupRes,"Glenville Lake at Dam NR Fayetteville, NC",35.06932,-78.8973,
-SupRes,Graham Mebane Reservoir at Dam near Haw River,36.09976,-79.32872,
-SupRes,"Harris Lake at SR1915 nr Corinth, NC",35.56857,-78.96669,
-SupRes,Haw Riv at SR 1713 nr Bynum,35.7716,-79.1449,
-SupRes,HAW RIV BELOW JORDAN DAM NR MONCURE,35.65342,-79.06728,
-SupRes,JORDAN LAKE ABOVE STINKING CREEK NR PITTSBORO NC,35.69131,-79.07905,
-SupRes,JORDAN LAKE AT MOUTH OF MORGAN CK NR FARRINGTON,35.82151,-78.99738,
-SupRes,JORDAN LAKE AT MOUTH OF NEW HOPE CREEK,35.81622,-78.98683,
-SupRes,JORDAN LAKE AT MOUTH OF WHITE OAK CREEK NR SEAFORTH,35.7384,-79.02432,
-SupRes,JORDAN LAKE AT NARROWS NEAR BONSAL,36.0249318,-79.99361,
-SupRes,JORDAN LAKE NEAR FARRINGTON NC,35.79494,-79.00758,
-SupRes,Knap of Reeds Creek,36.12797,-78.79852,
-SupRes,Lake Brandt at Dam near Hillsdale,36.17218,-79.83806,
-SupRes,Lake Mackintosh at Dam,36.04034,-79.50429,
-SupRes,"Lake Townsend at Dam near Greensboro, NC",36.18893,-79.73439,
-SupRes,MORGAN CRK AT SR 1726 NR FARRINGTON,35.8612,-79.01,
-SupRes,Neuse River @ SR 2000,35.94077,-78.5801,
-SupRes,New Hope Crk at SR 1107 Stagecoach Rd nr Blands,35.8847,-78.9656,
-SupRes,NORTHEAST CRK AT SR 1100 NR NELSON,35.87243,-78.91322,
-SupRes,"Oak Hollow Lake, High Point",36.01236,-79.98828,
-SupRes,PHILS CRK NR CAVANDER,35.91140747,-79.12845385,
-SupRes,Ramseur Lake (Sandy Creek Res),35.74443,-79.6763,
-SupRes,Randleman Lake at Water Intake,35.86305,-79.8288,
-SupRes,Reidsville Lake at Dam,36.28269,-79.66215,
-SupRes,Stony Creek Res at Dam,35.77335,-79.66412,
-SupRes,Third Fork Crk at NC 54 nr Durham,35.9187,-78.9548,
-SupRes,Turner Reservoir at Lacy's Creek,35.77442,-79.4611,
-SupRes,"University Lake at Dam nr Chapel Hill, NC",35.89647,-79.09322,
+Type,Site,lat,long
+WWTP,City.of.Asheboro.WWTP,35.76613469,-79.78579884
+WWTP,Northeast.Brunswick.Regional,34.27175034,-78.0055035
+WWTP,Town.of.Burgaw.Collection.System,34.55726739,-77.92518487
+WWTP,East.Burlington.WWTP,36.09382721,-79.37771112
+WWTP,South.Burlington.WWTP,36.02454813,-79.36944141
+WWTP,Wilmington-James.A.Loughlin(Northside).WWTP,34.26246994,-77.92142112
+WWTP,Wilmington-M'Kean.Maffitt(Southside).WWTP,34.16600449,-77.94528851
+WWTP,Cary.Western.Wake.Regional.Water.Reclamation.Facility,35.67154993,-78.94119022
+WWTP,Cit.of.Clinton-Norman.H.Larkins.WWTP,35.00515516,-78.34442384
+WWTP,Columbus.County.WWTP,34.3289896,-78.67922923
+WWTP,City.of.Durham-South.Durham.Water.Reclamation,35.90402079,-78.97846588
+WWTP,Durham.County.Triangle.Wastewater.Treatment.Plant,35.8802467,-78.8932025
+WWTP,Fayetteville-Cross.Creek.WWTP,35.05953494,-78.86003082
+WWTP,Fayetteville-Rockfish.Creek.WWTP,34.96435311,-78.83344791
+WWTP,City.of.Graham,36.04983302,-79.37369128
+WWTP,Greensboro-TZ.Osborne.WRF,36.09864301,-79.68893648
+WWTP,North.Harnett.Regional,35.40727843,-78.8203801
+WWTP,City.of.High.Point.Eastside.WWTP,35.94262001,-79.90908086
+WWTP,Town.of.Holly.Springs,35.64598133,-78.85109368
+WWTP,City.of.Mebane.WWTP,36.08862094,-79.28544925
+WWTP,City.of.Raeford,34.97691246,-79.1947716
+WWTP,Town.of.Ramseur.WWTP,35.72183182,-79.65364379
+WWTP,City.of.Randleman,35.80812458,-79.78271331
+WWTP,Town.of.Rose.Hill.WWTP,34.81715622,-78.00565245
+WWTP,Sanford-Big.Buffalo.Creek.WWTP,35.54719755,-79.21987282
+WWTP,Siler.City.Waste.Water.Treatment.Plant,35.72833511,-79.42704286
+WWTP,Wallace.Regional.WWTP,34.73817439,-77.99263394
+Source,Blowing Rock Town Pond,36.142932,-81.672783
+Source,Boone ASU Lake,36.23912,-81.67036
+Source,"Buckeye Lake, Beech Mtn",36.219191,-81.907021
+Source,Buckhorn Dam Lake Upstream of Dam,35.549187,-79.025086
+Source,"Cane Creek Reservoir at Dam nr Oaks, NC",35.94955,-79.24155
+Source,"Carthage City Lake at Dam NR Carthage, NC",35.33205,-79.40977
+Source,"City Lake, High Point",35.99615,-79.94499
+Source,Ellerbe Creek @ SR 1636,36.05949,-78.83224
+Source,Eno River @ SR 1004,36.07254,-78.8627
+Source,Fall Lake @ I-85 near Northside NC,36.07024,-78.77945
+Source,Falls Lake @ Channel Marker #6 near Bayleaf NC,36.00507,-78.64668
+Source,Falls Lake @ Marker #1 near Bayleaf NC,35.95591,-78.58444
+Source,Falls Lake @ Mouth Ledge Creek near Creedmoor NC,36.0222,-78.68529
+Source,Falls Lake @ Mth Little Lick Creek near Marker #13,36.01799,-78.73492
+Source,Flat River @ SR 1004,36.1318600000 ,-78.82784
+Source,"Glenville Lake at Dam NR Fayetteville, NC",35.06932,-78.8973
+Source,Graham Mebane Reservoir at Dam near Haw River,36.09976,-79.32872
+Source,"Harris Lake at SR1915 nr Corinth, NC",35.56857,-78.96669
+Source,Haw Riv at SR 1713 nr Bynum,35.7716,-79.1449
+Source,HAW RIV BELOW JORDAN DAM NR MONCURE,35.65342,-79.06728
+Source,JORDAN LAKE ABOVE STINKING CREEK NR PITTSBORO NC,35.69131,-79.07905
+Source,JORDAN LAKE AT MOUTH OF MORGAN CK NR FARRINGTON,35.82151,-78.99738
+Source,JORDAN LAKE AT MOUTH OF NEW HOPE CREEK,35.81622,-78.98683
+Source,JORDAN LAKE AT MOUTH OF WHITE OAK CREEK NR SEAFORTH,35.7384,-79.02432
+Source,JORDAN LAKE AT NARROWS NEAR BONSAL,36.0249318,-79.99361
+Source,JORDAN LAKE NEAR FARRINGTON NC,35.79494,-79.00758
+Source,Knap of Reeds Creek,36.12797,-78.79852
+Source,Lake Brandt at Dam near Hillsdale,36.17218,-79.83806
+Source,Lake Mackintosh at Dam,36.04034,-79.50429
+Source,"Lake Townsend at Dam near Greensboro, NC",36.18893,-79.73439
+Source,MORGAN CRK AT SR 1726 NR FARRINGTON,35.8612,-79.01
+Source,Neuse River @ SR 2000,35.94077,-78.5801
+Source,New Hope Crk at SR 1107 Stagecoach Rd nr Blands,35.8847,-78.9656
+Source,NORTHEAST CRK AT SR 1100 NR NELSON,35.87243,-78.91322
+Source,"Oak Hollow Lake, High Point",36.01236,-79.98828
+Source,PHILS CRK NR CAVANDER,35.91140747,-79.12845385
+Source,Ramseur Lake (Sandy Creek Res),35.74443,-79.6763
+Source,Randleman Lake at Water Intake,35.86305,-79.8288
+Source,Reidsville Lake at Dam,36.28269,-79.66215
+Source,Stony Creek Res at Dam,35.77335,-79.66412
+Source,Third Fork Crk at NC 54 nr Durham,35.9187,-78.9548
+Source,Turner Reservoir at Lacy's Creek,35.77442,-79.4611
+Source,"University Lake at Dam nr Chapel Hill, NC",35.89647,-79.09322
