@@ -20,6 +20,11 @@ getwd()
 
 library(tidyverse)
 library(lubridate)
+library(data.table)
+library(dplyr)
+library(formattable)
+library(tidyr)
+
 
 # Set your ggplot theme
 
@@ -29,9 +34,13 @@ mytheme <- theme_classic(base_size = 14) +
 theme_set(mytheme)
 
 # Load your datasets
-PFAS_wide_clean <- read.csv("./Data/Processed/PFAS_wide_clean.csv", stringsAsFactors = TRUE)
+PFAS_WWTP_clean <- read.csv("./Data/Processed/PFAS_WWTP_clean.csv", stringsAsFactors = TRUE)
 
-PFAS_long_clean <- read.csv("./Data/Processed/PFAS_long_clean.csv", stringsAsFactors = TRUE)
+PFAS_WWTP_wide_clean <- read.csv("./Data/Processed/PFAS_WWTP_wide_clean.csv", stringsAsFactors = TRUE)
+
+PFAS_Source_clean <- read.csv("./Data/Processed/PFAS_Source_clean.csv", stringsAsFactors = TRUE)
+
+PFAS_Source_wide_clean <- read.csv("./Data/Processed/PFAS_Source_wide_clean.csv", stringsAsFactors = TRUE)
 
 ```
 
@@ -48,17 +57,56 @@ Scope: think about what information someone might want to know about the dataset
 
 ```{r}
 
-colnames(PFAS_long_clean)
-head(PFAS_long_clean)
-
-summary(PFAS_long_clean)
-
 #Using the `summary` function, determine the six most commonly studied species in the dataset (common name). What do these species have in common, and why might they be of interest over other insects? 
-summary(PFAS_long_clean$Analyte)
 
-str(PFAS_long_clean)
-dim(PFAS_long_clean)
+### TABLES
 
+# number of each analyte with recorded levels in WWTP sites
+unique_WWTP <- 
+  PFAS_WWTP_clean %>%
+  group_by(Analyte) %>%
+  summarise(non_na_count = sum(!is.na(ppt))) %>%
+  arrange(desc(non_na_count)) %>%
+  rename(Count= non_na_count)
+
+# top analytes found in WWTP
+top10_wwtp <- head(unique_WWTP, 10)
+
+# make table of top WWTP analytes
+customGreen0 = "#DeF7E9"
+customGreen = "#71CA97"
+customRed = "#ff7f7f"
+
+formattable(top10_wwtp)
+
+
+### PFOA PFOS in WWTP for those over 70 (but didn't filter by 70 because need to show all dates even when they weren't over 70)
+
+wwtp_pfoa.pfos_table <-
+  PFAS_WWTP_wide_clean %>%
+  select(Site, PFOA, PFOS, SumPFOA.PFOS, Sample.Date) %>%
+  filter(Site %in% c("Sanford-Big.Buffalo.Creek.WWTP", "City.of.Raeford", "East.Burlington.WWTP")) %>%
+  arrange(Site) %>%
+  rename(Sum = SumPFOA.PFOS)
+
+formattable(wwtp_pfoa.pfos_table, list(`Sum` = color_bar(customRed)))
+
+### Range of Reporting Limits per Analyte
+
+wwtp_reporting <-
+  PFAS_WWTP_clean %>%
+  group_by(Analyte) %>%
+  summarise(MaxReport = max(lab.qual, na.rm = T)) %>%
+  arrange(desc(MaxReport))
+
+source_reporting <-
+  PFAS_Source_clean %>%
+  group_by(Analyte) %>%
+  summarise(MaxReport = max(lab.qual, na.rm = T)) %>%
+  arrange(desc(MaxReport))
+
+formattable(wwtp_reporting)
+formattable(source_reporting)
 
 ```
 
@@ -72,13 +120,13 @@ dim(PFAS_long_clean)
 
 # NEED TO CLEAN SO CAN SEE ALL LABLES (maybe tilt)
 
-ggplot(PFAS_long_clean, aes(x = Analyte)) +
+ggplot(PFAS_WWTP_clean, aes(x = Analyte)) +
   geom_bar()
 
-# how many samples of analytes with ppt values
+# how many samples of analytes
 
-ggplot(PFAS_long_clean, aes(x = Analyte)) +
-  geom_bar(data = PFAS_long_clean %>% filter(ppt != "NA")) +
+ggplot(PFAS_WWTP_clean, aes(x = Analyte)) +
+  geom_bar(data = PFAS_WWTP_clean %>% filter(ppt != "NA")) +
   labs(x = "Analyte", y = "Number of Samples")
 
 ```
@@ -89,11 +137,11 @@ Visualize distributions of values for continuous numerical variables.
 
 ```{r}
 
-ggplot(PFAS_long_clean) +
+ggplot(PFAS_WWTP_clean) +
   geom_histogram(aes(x = ppt)) +
   labs(x = "Analyte", y = "Number of Samples")
 
-ggplot(PFAS_long_clean, aes(x = ppt)) +
+ggplot(PFAS_WWTP_clean, aes(x = ppt)) +
   geom_histogram(binwidth = 50) + 
   scale_x_continuous(limits = c(0, 250)) +
   labs(x = "Analyte", y = "Number of Samples")
@@ -106,11 +154,21 @@ An alternate to a histogram is a frequency polygon graph (distributions of value
 
 ```{r}
 
-ggplot(PFAS_long_clean) +
+### WWTP 
+ggplot(subset(PFAS_WWTP_clean, Analyte %in% c("PFOA", "PFOS", "PFBA", "PFHxA", "PFNA", "PFBS", "6.2", "PFHpA", "PFPeA"))) +
   geom_freqpoly(aes(x = ppt, color = Analyte), bins = 50) +
   scale_x_continuous(limits = c(0, 250)) +
   theme(legend.position = "top") +
-  labs(x = "PPT", y = "Number of Samples")
+  labs(x = "PPT", y = "Number of Samples") +
+  ggtitle("Number of Analyte Samples by Level at WWTP")
+
+### Source 
+ggplot(subset(PFAS_Source_clean, Analyte %in% c("PFOA", "PFOS", "PFBA", "PFHxA", "PFHpA", "PFPeA"))) +
+  geom_freqpoly(aes(x = ppt, color = Analyte), bins = 50) +
+  scale_x_continuous(limits = c(0, 250)) +
+  theme(legend.position = "top") +
+  labs(x = "PPT", y = "Number of Samples") +
+  ggtitle("Number of Analyte Samples by Level at Source Sites")
 
 ```
 
@@ -158,8 +216,17 @@ ggplot(subset(PFAS_long_clean,Type %in% c("WWTP"))) +
 
 ```{r}
 
+library(sf)
+library(leaflet)
+library(mapview)
+library(RColorBrewer)
 
+pfas_sf <- 
+  PFAS_wide_clean %>% 
+  group_by(Site, lat, long, TotalPFAS) %>% 
+  st_as_sf(coords = c('long','lat'), crs=4269)
 
+mapview(pfas_sf)
 ```
 
 

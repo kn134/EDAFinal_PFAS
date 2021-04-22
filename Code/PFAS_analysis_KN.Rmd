@@ -30,9 +30,13 @@ mytheme <- theme_classic(base_size = 14) +
 theme_set(mytheme)
 
 # Load your datasets
-PFAS_long_clean <- read.csv("./Data/Processed/PFAS_long_clean.csv", stringsAsFactors = TRUE)
+PFAS_WWTP_clean <- read.csv("./Data/Processed/PFAS_WWTP_clean.csv", stringsAsFactors = TRUE)
 
-PFAS_wide_clean <- read.csv("./Data/Processed/PFAS_wide_clean.csv", stringsAsFactors = TRUE)
+PFAS_WWTP_wide_clean <- read.csv("./Data/Processed/PFAS_WWTP_wide_clean.csv", stringsAsFactors = TRUE)
+
+PFAS_Source_clean <- read.csv("./Data/Processed/PFAS_Source_clean.csv", stringsAsFactors = TRUE)
+
+PFAS_Source_wide_clean <- read.csv("./Data/Processed/PFAS_Source_wide_clean.csv", stringsAsFactors = TRUE)
 
 ```
 
@@ -54,33 +58,18 @@ Each figure should be accompanied by a caption, and each figure should be refere
 
 # want to know what type of remediation is needed to deal with their contamination (GAC short chain; RO both)
 
-# add up all the ppt for long at the site; add up ppt for short
-
-#I'm sure there's a way to do it this way, but not working
-#chain_long <- c('PFDS','PFDA','PFDoA','PFHpS','PFHxS','PFNS','PFNA','PFOSA','N.EtFOSAA','N.MeFOSAA','PFTeA','PFTriA','PFUnA','HFPO.DA','PFOA','PFOS')
-
-#chain_short <- c(PFBA, PFBS,PFHpA,PFHxA,PFPeS,PFPeA)
-
-#should be in wrangle
-#PFAS_wide_clean <- 
-#    PFAS_wide_clean %>% 
-#    rowwise() %>% 
-#    mutate(short.ppt = sum(PFBA, PFBS, PFHpA, PFHxA, PFPeS, PFPeA, na.rm = TRUE)) %>%
-#    mutate(long.ppt = sum(PFDS, PFDA, PFDoA, PFHpS, PFHxS, PFNS, PFNA, PFOSA, N.EtFOSAA, N.MeFOSAA, PFTeA, PFTriA, PFUnA, HFPO.DA, PFOA, PFOS, na.rm = TRUE))
-  
-# group by chain length
-pfas_chain_group <-
-  PFAS_long_clean %>%
-  drop_na(ppt) %>%
-  group_by(Type, Site, chain.length) %>%
-  summarise(ppt = sum(ppt))
-
-# bar plot stacked
-ggplot(subset(pfas_chain_group, Type == "Source"), aes(x = Site, y = ppt))+
+ggplot(subset(PFAS_WWTP_clean, !is.na(ppt)), aes(x = Site, y = ppt))+
   geom_col(aes(fill = chain.length)) +
   labs(fill = "Chain Length") +
-  theme(axis.text.x=element_blank(),
-        axis.ticks.x=element_blank())
+  xlab("WWTP Site") +
+  theme(axis.text.x = element_text(angle = 90,  hjust = 1))
+
+
+ggplot(subset(PFAS_Source_clean, !is.na(ppt)), aes(x = Site, y = ppt))+
+  geom_col(aes(fill = chain.length)) +
+  labs(fill = "Chain Length") +
+  xlab("Source Site") +
+  theme(axis.text.x = element_text(angle = 90,  hjust = 1))
 
 ```
 
@@ -338,17 +327,26 @@ ggplot(subset(pfas_chain_group, Type == "WWTP"), aes(x = Site, y = ppt))+
 ```{r}
 
 wwtp_analyte_above_30 <- 
-  PFAS_long_clean %>%
-  filter(Type == "WWTP") %>%
+  PFAS_WWTP_clean %>%
   filter(ppt > 30)
 
 wwtp_analyte_above_70 <- 
-  PFAS_long_clean %>%
-  filter(Type == "WWTP") %>%
+  PFAS_WWTP_clean %>%
   filter(ppt > 70)
 
-unique(wwtp_analyte_above_30$Site) #21 Sites above 30 
+source_analyte_above_30 <- 
+  PFAS_Source_clean %>%
+  filter(ppt > 30)
+
+source_analyte_above_70 <- 
+  PFAS_Source_clean %>%
+  filter(ppt > 70)
+
+unique(wwtp_analyte_above_30$Site) #27 Sites above 30 
 unique(wwtp_analyte_above_70$Site) #13 sites above 70
+
+unique(source_analyte_above_30$Site) #11 Sites above 30 
+unique(source_analyte_above_70$Site) #5 sites above 70
 
 ```
 
@@ -382,4 +380,92 @@ unique(wwtp_analyte_above_70$Site) #13 sites above 70
 
 ```
 
+
+### LIT REVIEW 
+
+# Total PFAS date v ppt by site (lines or facet)
+
+```{r}
+
+PFAS_WWTP_wide_clean$Sample.Date <- ymd(PFAS_WWTP_wide_clean$Sample.Date)
+
+ggplot(PFAS_WWTP_wide_clean, aes(x=Sample.Date, y = TotalPFAS, group=Site)) +
+  geom_line(aes(color=Site)) +
+  geom_point(aes(color=Site)) +
+  scale_x_date(date_breaks = "1 month", date_labels = "%b %y")
+
+# or
+
+PFAS_WWTP_wide_clean <-
+  PFAS_WWTP_wide_clean %>%
+  mutate(month = month(Sample.Date))
+
+ggplot(PFAS_WWTP_wide_clean, aes(x=month, y = TotalPFAS, group=Site)) +
+  geom_line(aes(color=Site)) +
+  geom_point(aes(color=Site)) +
+  scale_x_continuous(breaks=c(7, 8, 9)) +
+  ylab("Total PFAS (ppt)") +
+  xlab("2019 Month") +
+  theme(legend.position="right")
+
+```
+
+# Analytes by site (bar) with line at 70
+
+```{r}
+
+ggplot(PFAS_WWTP_clean, aes(fill=Analyte, x=Site, y=ppt)) +
+  geom_bar(position="stack", stat="identity") +
+  labs(fill = "Analyte") +
+  geom_hline(yintercept = 70, lty = 2) +
+  ylim(0,5000) +
+  ylab("Total PFAS (ppt)") +
+  xlab("WWTP Site") +
+  geom_text(x = "City.of.Graham", y = 45, label = "70 ppt", hjust = 1, fontface = "bold")  +
+  theme(axis.text.x = element_text(angle = 90,  hjust = 1),
+    legend.position="right")
+
+
+ggplot(subset(PFAS_Source_clean, !is.na(ppt)), aes(fill=Analyte, x=Site, y=ppt)) +
+  geom_bar(position="stack", stat="identity") +
+  labs(fill = "Analyte") +
+  geom_hline(yintercept = 70, lty = 2) +
+  ylim(0,3000) +
+  ylab("Total PFAS (ppt)") +
+  xlab("Source Site") +
+  geom_text(x = "NORTHEASTCRKATSR1731OKELLYCHURCHRDNRDURHAM", y = 45, label = "70 ppt", hjust = 1, fontface = "bold")  +
+  theme(axis.text.x = element_text(angle = 90,  hjust = 1),
+    legend.position="right")
+
+```
+
+# Analytes over date and ppt
+
+```{r}
+
+```
+
+# Compare PFOA/PFOS and Total (stacked bar)
+
+```{r}
+
+PFAS_WWTP_wide_clean <-
+  PFAS_WWTP_wide_clean %>%
+  mutate(nonPFOA.PFOS = (TotalPFAS-SumPFOA.PFOS))
+
+6.2
+
+WWTP_sum.total <-
+  PFAS_WWTP_clean %>%
+  filter(Analyte %in% c("PFOA", "PFOS", "PFBA", "PFHxA", "PFNA", "PFBS", "PFHpA", "PFPeA"))
+
+cols <- c(PFOA="blue", PFOS="blue", PFBA="black", PFHxA="black", PFNA="black", PFBS="black", PFHpA="black", PFPeA="black")
+
+ggplot(WWTP_sum.total, aes(x=Site, y=ppt, fill=Analyte)) +
+  geom_bar(stat="identity", position = "dodge") +
+  scale_fill_manual(values = cols) +
+  xlab("WWTP Site")+
+  theme(axis.text.x = element_text(angle = 90,  hjust = 1),
+    legend.position="right")
+```
 
