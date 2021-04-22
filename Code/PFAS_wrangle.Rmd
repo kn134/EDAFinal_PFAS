@@ -28,82 +28,88 @@ mytheme <- theme_classic(base_size = 14) +
 theme_set(mytheme)
 
 # Load your datasets
-PFAS_long <- read.csv("../Data/Processed/CombinedDatasets_long_cleaned_time.csv", stringsAsFactors = TRUE)
+PFAS_WWTP <- read.csv("../Data/Raw/2019_WWTP_orginal_asdataset.csv", stringsAsFactors = TRUE)
 
-PFAS_wwtp_wide_july <- read.csv("../Data/Processed/2019_WWTP_July.csv", stringsAsFactors = TRUE)
-PFAS_wwtp_wide_aug <- read.csv("../Data/Processed/2019_WWTP_Aug.csv", stringsAsFactors = TRUE)
-PFAS_wwtp_wide_sep <- read.csv("../Data/Processed/2019_WWTP_Sept.csv", stringsAsFactors = TRUE)
+PFAS_Source <- read.csv("../Data/Raw/2018_PublicSupply_original.csv", stringsAsFactors = TRUE)
 
-PFAS_source_wide <- read.csv("../Data/Processed/2018_PublicSupply_wide_latlong.csv", stringsAsFactors = TRUE)
+chainlength <- read.csv("../Data/Raw/chainlength.csv", stringsAsFactors = TRUE)
+
+latlong <- read.csv("../Data/Raw/Locations_latlong.csv", stringsAsFactors = TRUE)
+
+
+# PFAS_wwtp_wide_july <- read.csv("../Data/Processed/2019_WWTP_July.csv", stringsAsFactors = TRUE)
+# PFAS_wwtp_wide_aug <- read.csv("../Data/Processed/2019_WWTP_Aug.csv", stringsAsFactors = TRUE)
+# PFAS_wwtp_wide_sep <- read.csv("../Data/Processed/2019_WWTP_Sept.csv", stringsAsFactors = TRUE)
+# 
+# PFAS_source_wide <- read.csv("../Data/Processed/2018_PublicSupply_wide_latlong.csv", stringsAsFactors = TRUE)
 
 ```
 
-
-#combine wide
+# convert date format
 
 ```{r}
-# create wide ISSUES MAKING EACH SITE *AND* BY DATE *AND WITH DUPLLICATE LAB QUALIFIER*
-#PFAS_wide <- pivot_wider(PFAS_clean, names_from = Analyte, values_from = ppt)
 
-PFAS_wide_wwtp <- rbind(PFAS_wwtp_wide_july, PFAS_wwtp_wide_aug, PFAS_wwtp_wide_sep)
+PFAS_WWTP$Sample.Date <- mdy(PFAS_WWTP$Sample.Date)
+PFAS_Source$Sample.Date <- mdy(PFAS_Source$Sample.Date)
 
-PFAS_wide_combined <- full_join(PFAS_wide_wwtp, PFAS_source_wide)
-
-# if doing through R, remember to add sum PFOA/PFOS and total PFAS columns
 ```
+
+
+# delete unneeded source columns
 ```{r}
-### DONT RUN UNTIL FIX SCRIPT
 
-## PFAS wide needs site type
-
-long_site <- 
-  PFAS_long %>%
-  select(Type, Site)
-
-long_distict_site <-
-  long_site %>% distinct()
-
-### HELP THIS ISN'T WORKING
-PFAS_wide_combined <- 
-  semi_join(long_site, PFAS_wide_combined, by = "Site")
-
-# Until the join works, use manual excel (brought in the beginning)
+PFAS_Source <-
+  PFAS_Source %>%
+  select(Site, Sample.Date:lab.qual)
 
 ```
 
+
+### WIDE
+
+# create wide
 
 ```{r}
-#convert dates
-PFAS_long$Sample.Date <- mdy(PFAS_long$Sample.Date)
 
-PFAS_wide_combined$Sample.Date <- mdy(PFAS_wide_combined$Sample.Date)
+# drop lab qual
+
+PFAS_WWTP_wide <-
+  PFAS_WWTP %>%
+  select(Site:ppt)
+
+
+PFAS_Source_wide <-
+  PFAS_Source %>%
+  select(Site:ppt)
+
+# pivot wider
+
+PFAS_WWTP_wide <-
+  PFAS_WWTP_wide %>%
+  pivot_wider(names_from = Analyte, values_from = ppt)
+
+PFAS_Source_wide <-
+  PFAS_Source_wide %>%
+  pivot_wider(names_from = Analyte, values_from = ppt)
 
 ```
+
+# add total PFAS, sum PFOA/PFOS, short chain, long chain to wide
+
 ```{r}
-# remove Sum and Total rows
-PFAS_long <- PFAS_long[!grepl("Sum",PFAS_long$Analyte),]
-PFAS_long <- PFAS_long[!grepl("Total",PFAS_long$Analyte),]
+
+PFAS_WWTP_wide <- 
+  PFAS_WWTP_wide %>%
+  rowwise() %>%
+  mutate(TotalPFAS = sum(4.2, 6.2, 8.2, 10.2, N.EtFOSAA, N.MeFOSAA, Nafion.Byproduct.2, HFPO.DA, PFBA, PFBS, PFDA, PFDoA, PFDS, PFHpA, PFHpS, PFHxA, PFHxS, PFMOAA, PFMOBA, PFMOPrA, PFNA, PFNS, PFO2HxA, PFO3OA, PFO4DA, PFPeA, PFOA, PFOS, PFOSA, PFPeS, PFPrOPrA, PFTeA, PFTriA, PFUnA, PFHxDA, PFODA, ADONA, N.EtFOSA, Nafion.Byproduct.1, N.EtFOSE, N.MeFOSA, N.MeFOSE, PF3ONS, PF3OUdS, PFECA.G, na.rm=TRUE)) %>%
+  mutate(SumPFOA.PFOS = sum(PFOA, PFOS, na.rm=TRUE)) %>%
+  mutate(short.ppt = sum(PFBA, PFBS, PFHpA, PFHxA, PFPeS, PFPeA, 4.2, 6.2, na.rm = TRUE)) %>%
+  mutate(long.ppt = sum(PFDS, PFDA, PFDoA, PFHpS, PFHxS, PFNS, PFNA, PFOSA, N.EtFOSAA, N.EtFOSA, N.MeFOSAA, N.MeFOSA, PFTeA, PFTriA, PFUnA, HFPO.DA, PFOA, PFOS, 8.2, 10.2, na.rm = TRUE))
 
 ```
 
-```{r}
-# only keep the analytes we care about in long
 
-#unique(PFAS_clean$Analyte)
-
-# STILL TO DO ((NOTE CURRENT ANALYSES WRONG WITHOUT THIS))
-# convert 
-# "PFTeA (PFTA)" and "PFTeA/PFTeDA" to "PFTeA"
-# "PFTriA (PFTrA)" and "PFTriA/PFTrDA" to PFTriA
-# "PFUnA/PFUdA" to PFUnA
-# "HFPO-DA (GenX)" and "NaDONA/GENx" to HFPO
-
-
-### THIS ISN'T THE RIGHT WAY TO REMOVE?? they disappear but not removed from dataset, as seen in 'summary'
-PFAS_long_clean <-
-  PFAS_long %>%
-  filter(Analyte %in% c("PFBA", "PFBS", "PFDS", "PFDA", "PFDoA", "PFHpS", "PFHpA", "PFHxS", "PFHxA", "PFNS", "PFNA", "PFOSA", "N-EtFOSAA", "N-MeFOSAA", "PFPeS", "PFPeA", "PFTeA", "PFTriA", "PFUnA", "HFPO-DA", "PFOA", "PFOS"))
-```
+### LONG
 
 # chain lengths
 
@@ -111,33 +117,33 @@ PFAS_long_clean <-
 
 #Creates a function to determine if Analyte is short or long
 chain.length.function <- function(x){
-    ifelse(x %in% c("PFBA","PFBS","PFHpA","PFHxA","PFPeS","PFPeA","4:2 FTS"), "short", "long")}
+    ifelse(x %in% c("PFBA","PFBS","PFHpA","PFHxA","PFPeS","PFPeA","4.2", "6.2"), "short", "long")}
 
-#Makes a chain.length column in the long data Set
-PFAS_long_clean <- PFAS_long_clean %>%
+#Makes a chain.length column
+PFAS_WWTP <- 
+  PFAS_WWTP %>%
   mutate(chain.length = chain.length.function(Analyte)) 
 
-# make chain length in wide data set
-PFAS_wide_clean <- 
-    PFAS_wide_clean %>% 
-    rowwise() %>% 
-    mutate(short.ppt = sum(PFBA, PFBS, PFHpA, PFHxA, PFPeS, PFPeA, na.rm = TRUE)) %>%
-    mutate(long.ppt = sum(PFDS, PFDA, PFDoA, PFHpS, PFHxS, PFNS, PFNA, PFOSA, N.EtFOSAA, N.MeFOSAA, PFTeA, PFTriA, PFUnA, HFPO.DA, PFOA, PFOS, na.rm = TRUE))
+PFAS_Source <- 
+  PFAS_Source %>%
+  mutate(chain.length = chain.length.function(Analyte)) 
 
 ```
+
+
+# lat/long
 
 ```{r}
 
-# add Total PFAS to wide
+PFAS_WWTP <-
+  left_join(PFAS_WWTP, latlong) %>%
+  select(Site:chain.length,lat,long)
 
-PFAS_wide_clean <- PFAS_wide_combined %>%
-  mutate(TotalPFAS = sum(short.ppt, long.ppt, na.rm=TRUE)) 
+PFAS_Source <-
+  left_join(PFAS_Source, latlong) %>%
+  select(Site:chain.length,lat,long)
 
 ```
-
-
-# still to do
-## PFAS long needs lat/long
 
 
 # save processed files
