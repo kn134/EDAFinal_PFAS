@@ -34,7 +34,36 @@ Naming conventions are as follows: for data, if it is for one given year, the ye
 
 ## Metadata
 
-<For each data file in the repository, describe the data contained in each column. Include the column name, a description of the information, the class of data, and any units associated with the data. Create a list or table for each data file.> 
+2018_PublicSupply_original.csv
+  columns: Location, Site, Lab, Sample.Date, Analyte, ppt, lab.qual
+    Location: Code for the given site
+    Site: Site name
+    Lab: Lab where data was processed
+    Sample.Date: Sample date and time
+    Analyte: Type of Analyte tested
+    ppt: level of contaminant in parts per trillion
+    lab.qual: qualification value for testing
+2019_WWTP_original_asdataset.csv
+  columns: Site, Analyte, Sample.Date, ppt, lab.qual
+    Site: Site name
+    Sample.Date: Sample date and time
+    Analyte: Type of Analyte tested
+    ppt: level of contaminant in parts per trillion
+    lab.qual: qualification value for testing
+chainlenght.csv
+  columns: Chain_Length, Acronym
+    Chain_Length: If the analyte is considered long or short chain
+    Acronym: Acromnym for the given analyte
+Locations_latlong.csv
+  columns: Type, Site, lat, long
+    Type: WWTP or Source data
+    Site: Name of the site
+    Lat: Latitude
+    Long: longitude
+sitetype.csv
+  columns: Type, Site
+    Type: WWTP or Source data
+    Site: Name of the site 
 
 ## Scripts and code
 
@@ -46,9 +75,4 @@ PFAS_analysis.Rmd is a combined script including both Karly and Tay's markdown s
 
 ## Quality assurance/quality control
 
-<describe any relevant QA/QC procedures taken with your data. Some ideas can be found here:>
-<https://www.dataone.org/best-practices/develop-quality-assurance-and-quality-control-plan>
-<https://www.dataone.org/best-practices/ensure-basic-quality-control>
-<https://www.dataone.org/best-practices/communicate-data-quality>
-<https://www.dataone.org/best-practices/identify-outliers>
-<https://www.dataone.org/best-practices/identify-values-are-estimated>
+We double checked that the site name matched the location code. Lat and Long were examined to see if they matched the location described. We also checked to make sure there were no misspelled sites that may result in data being analyzed incorrectly. 
