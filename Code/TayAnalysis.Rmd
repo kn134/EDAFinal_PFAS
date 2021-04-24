@@ -130,23 +130,27 @@ unique(source_analyte_above_70$Site) #5 sites above 70
 
 #Plotting the sites with more than 30/70
 source_analyte_30_plot <- 
-  ggplot(source_analyte_above_30, aes(x = Site, y = ppt, color = Site)) +
-  geom_boxplot()+
-  theme(legend.position = "none")+
+  ggplot(source_analyte_above_30, aes(x = Sample.Date, y = ppt, color = Site)) +
+  geom_point(alpha = 0.5, size = 3)+
   theme(axis.text.x = element_text(angle = 45, hjust = 1))+
   theme(axis.text.x = element_text(size = 7))+
   geom_hline(yintercept = 30, lty = 2)+
-  scale_y_continuous(breaks=c(30, 100, 200, 300, 400, 500, 600))
+  scale_y_continuous(breaks=c(30, 100, 200, 300, 400, 500, 600))+
+  theme(legend.position = "right", 
+        legend.text = element_text(size = 5), legend.title = element_text(size = 12))+
+  xlab("Sample Date")
 print(source_analyte_30_plot + ggtitle("Source sites with Analytes above 30 ppt"))
 
 source_analyte_70_plot <- 
-  ggplot(source_analyte_above_70, aes(x = Site, y = ppt, color = Site)) +
-  geom_boxplot()+
-  theme(legend.position = "none")+
+  ggplot(source_analyte_above_70, aes(x = Sample.Date, y = ppt, color = Site)) +
+  geom_point(alpha = 0.5, size = 3)+
   theme(axis.text.x = element_text(angle = 45, hjust = 1))+
   theme(axis.text.x = element_text(size = 7))+
   geom_hline(yintercept = 70, lty = 2)+
-  scale_y_continuous(breaks=c(70, 100, 200, 300, 400, 500, 600))
+  scale_y_continuous(breaks=c(70, 100, 200, 300, 400, 500, 600))+
+  theme(legend.position = "right", 
+        legend.text = element_text(size = 5), legend.title = element_text(size = 12))+
+  xlab("Sample Date")
 print(source_analyte_70_plot + ggtitle("Source sites with Analytes above 70 ppt"))
 ```
 
@@ -271,23 +275,27 @@ unique(wwtp_analyte_above_70$Site) #13 sites above 70
 
 #Plotting WWTP anayltes over the ppt standards
 wwtp_analyte_30_plot <- 
-  ggplot(wwtp_analyte_above_30, aes(x = Site, y = ppt, color = Site)) +
-  geom_boxplot()+
-  theme(legend.position = "none")+
+  ggplot(wwtp_analyte_above_30, aes(x = Sample.Date, y = ppt, color = Site)) +
+  geom_point(alpha = 0.5, size = 3)+
   theme(axis.text.x = element_text(angle = 45, hjust = 1))+
   theme(axis.text.x = element_text(size = 7))+
   geom_hline(yintercept = 30, lty = 2)+
-  scale_y_continuous(breaks=c(30, 100, 200, 400, 800, 1000))
+  scale_y_continuous(breaks=c(30, 100, 200, 400, 800, 1000))+
+  theme(legend.position = "right", 
+        legend.text = element_text(size = 5), legend.title = element_text(size = 12))+
+  xlab("Sample Date")
 print(wwtp_analyte_30_plot + ggtitle("WWTP sites with Analytes above 30 ppt"))
 
 wwtp_analyte_70_plot <- 
-  ggplot(wwtp_analyte_above_70, aes(x = Site, y = ppt, color = Site)) +
-  geom_boxplot()+
-  theme(legend.position = "none")+
+  ggplot(wwtp_analyte_above_70, aes(x = Sample.Date, y = ppt, color = Site)) +
+  geom_point(alpha = 0.5, size = 3)+
   theme(axis.text.x = element_text(angle = 45, hjust = 1))+
   theme(axis.text.x = element_text(size = 7))+
   geom_hline(yintercept = 70, lty = 2)+
-  scale_y_continuous(breaks=c(70, 200, 400, 800, 1000))
+  scale_y_continuous(breaks=c(70, 200, 400, 800, 1000))+
+  theme(legend.position = "right", 
+        legend.text = element_text(size = 5), legend.title = element_text(size = 12))+
+  xlab("Sample Date")
 print(wwtp_analyte_70_plot + ggtitle("WWTP sites with Analytes above 70 ppt"))
 ```
 
