@@ -203,9 +203,30 @@ print(source_total_pfas_130_plot + ggtitle("Source Sites with Total PFAS Above 1
 ### Question 2a: [Tay] Summary Stats: ND below 5; ND below 10; ND below 20 (distrubtion bell curve)
 
 ```{r}
+source_ND_under5 <-
+  PFAS_long_clean[!is.na(PFAS_long_clean$limit),] %>%
+  filter(Type == "Source") %>%
+  filter(limit < 5)
 
+source_ND_under10 <-
+  PFAS_long_clean[!is.na(PFAS_long_clean$limit),] %>%
+  filter(Type == "Source") %>%
+  filter(limit < 10)
 
+source_ND_under20 <-
+  PFAS_long_clean[!is.na(PFAS_long_clean$limit),] %>%
+  filter(Type == "Source") %>%
+  filter(limit < 20)
 
+summary(source_ND_under5)
+summary(source_ND_under10)
+summary(source_ND_under20)
+
+#histograms for ND below 5 and 10 are pointless
+ggplot(source_ND_under20)+
+  geom_histogram(aes(x=limit))+
+  xlab("ND under 20 ppt")+
+  ylab("# of Samples")
 ```
 
 
@@ -337,7 +358,39 @@ print(wwtp_total_pfas_130_plot + ggtitle("WWTP Sites with Total PFAS Above 130 p
 ### Question 4a: [Tay] Summary Stats: ND below 5; ND below 10; ND below 20 (distrubtion bell curve)
 
 ```{r}
+wwtp_ND_under5 <-
+  PFAS_long_clean[!is.na(PFAS_long_clean$limit),] %>%
+  filter(Type == "WWTP") %>%
+  filter(limit < 5)
 
+wwtp_ND_under10 <-
+  PFAS_long_clean[!is.na(PFAS_long_clean$limit),] %>%
+  filter(Type == "WWTP") %>%
+  filter(limit < 10)
+
+wwtp_ND_under20 <-
+  PFAS_long_clean[!is.na(PFAS_long_clean$limit),] %>%
+  filter(Type == "WWTP") %>%
+  filter(limit < 20)
+
+summary(wwtp_ND_under5)
+summary(wwtp_ND_under10)
+summary(wwtp_ND_under20)
+
+ggplot(wwtp_ND_under5)+
+  geom_histogram(aes(x=limit))+
+  xlab("ND under 5 ppt")+
+  ylab("# of Samples")
+
+ggplot(wwtp_ND_under10)+
+  geom_histogram(aes(x=limit))+
+  xlab("ND under 10 ppt")+
+  ylab("# of Samples")
+
+ggplot(wwtp_ND_under20)+
+  geom_histogram(aes(x=limit))+
+  xlab("ND under 20 ppt")+
+  ylab("# of Samples")
 ```
 
 ### Question 4b: [Tay] Percentages (how many ND / total detections under 30) within any. Within GenX. See how many of which analytes have the worst percentage rations --> play with those trends
