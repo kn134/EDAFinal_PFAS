@@ -1,0 +1,407 @@
+---
+title: "PFAS_analysis_KN"
+author: "Karly Nocera and Tay Holiday"
+date: "4/16/2021"
+output: pdf_document
+editor_options: 
+  chunk_output_type: console
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+```{r setup, include=FALSE}
+# Set your working directory
+
+getwd()
+setwd("Z:/ENV872/Environmental_Data_Analytics_2021/Project/EDAFinal_PFAS")
+
+# Load your packages
+
+library(tidyverse)
+library(lubridate)
+
+# Set your ggplot theme
+
+mytheme <- theme_classic(base_size = 14) +
+  theme(axis.text = element_text(color = "black"), 
+        legend.position = "top")
+
+theme_set(mytheme)
+
+# Load your datasets
+PFAS_long_clean <- read.csv("./Data/Processed/PFAS_long_clean.csv", stringsAsFactors = TRUE)
+
+PFAS_wide_clean <- read.csv("./Data/Processed/PFAS_wide_clean.csv", stringsAsFactors = TRUE)
+
+```
+
+
+# Analysis
+
+Insert visualizations and text describing your main analyses. Format your R chunks so that graphs are displayed but code and other output is not displayed. Instead, describe the results of any statistical tests in the main text (e.g., "Variable x was significantly different among y groups (ANOVA; df = 300, F = 5.55, p < 0.0001)"). Each paragraph, accompanied by one or more visualizations, should describe the major findings and how they relate to the question and hypotheses. Divide this section into subsections, one for each research question.
+
+Each figure should be accompanied by a caption, and each figure should be referenced within the text
+
+
+
+
+## Question 1: Source Data Analytes
+
+### Question 1a: Long v Short
+
+```{r}
+
+# want to know what type of remediation is needed to deal with their contamination (GAC short chain; RO both)
+
+# add up all the ppt for long at the site; add up ppt for short
+
+#I'm sure there's a way to do it this way, but not working
+#chain_long <- c('PFDS','PFDA','PFDoA','PFHpS','PFHxS','PFNS','PFNA','PFOSA','N.EtFOSAA','N.MeFOSAA','PFTeA','PFTriA','PFUnA','HFPO.DA','PFOA','PFOS')
+
+#chain_short <- c(PFBA, PFBS,PFHpA,PFHxA,PFPeS,PFPeA)
+
+PFAS_wide_clean <- 
+    PFAS_wide_clean %>% 
+    rowwise() %>% 
+    mutate(short.ppt = sum(PFBA, PFBS, PFHpA, PFHxA, PFPeS, PFPeA, na.rm = TRUE)) %>%
+    mutate(long.ppt = sum(PFDS, PFDA, PFDoA, PFHpS, PFHxS, PFNS, PFNA, PFOSA, N.EtFOSAA, N.MeFOSAA, PFTeA, PFTriA, PFUnA, HFPO.DA, PFOA, PFOS, na.rm = TRUE))
+  
+# stacked histogram ppt vs site
+
+ggplot(df, aes(x = dose, y = len))+
+  geom_col(aes(fill = supp), width = 0.7)
+
+ggplot(PFAS_wide_clean, aes(x = Site, y = short.ppt))+
+  geom_col(aes(fill = supp), width = 0.7)
+
+
+ggplot(subset(PFAS_wide_clean,Type %in% c("Source"))) +
+  geom_col(aes(x = Site, y = ppt), 
+              draw_quantiles = c(0.25, 0.5, 0.75)) +
+  scale_y_continuous(limits = c(0, 100))
+
+
+PFAS_wide_clean %>% 
+   select(-total) %>% 
+   gather(type, count, burglaries:robberies) %>% 
+   ggplot(., aes(x=year, y=count, fill=forcats::fct_rev(type))) +
+   geom_bar(stat="identity")
+
+
+
+
+
+
+```
+
+### Question 1b: Top 5 Analytes
+
+```{r}
+
+```
+
+
+### Question 1c: Are there rivers that are scary we aren't talking about? (high and type of analyte)
+
+```{r}
+
+```
+
+### Question 1d: [Tay] Are any spots with one analyte over 70? over 30?
+
+```{r}
+#Any locations with Analyte above 30? 70?
+#To do this, a simple pipe should do to filter out which analytes/site are above the given value.
+#EPA_Processed_2018$Result <- subset(EPA_Processed_2018$Result, !is.na()) #converts the result into a numeric value instead of a factor
+
+source_analyte_above_30 <- 
+  PFAS_long_clean %>%
+  filter(Type == "Source") %>%
+  filter(ppt > 30)
+
+source_analyte_above_70 <- 
+  PFAS_long_clean %>%
+  filter(Type == "Source") %>%
+  filter(ppt > 70)
+
+unique(source_analyte_above_30$Site) #11 Sites above 30 
+unique(source_analyte_above_70$Site) #5 sites above 70
+
+#Plotting the sites with more than 30/70
+source_analyte_30_plot <- 
+  ggplot(source_analyte_above_30, aes(x = Sample.Date, y = ppt, color = Site)) +
+  geom_point(alpha = 0.5, size = 3)+
+  theme(axis.text.x = element_text(angle = 45, hjust = 1))+
+  theme(axis.text.x = element_text(size = 7))+
+  geom_hline(yintercept = 30, lty = 2)+
+  scale_y_continuous(breaks=c(30, 100, 200, 300, 400, 500, 600))+
+  theme(legend.position = "right", 
+        legend.text = element_text(size = 5), legend.title = element_text(size = 12))+
+  xlab("Sample Date")
+print(source_analyte_30_plot + ggtitle("Source sites with Analytes above 30 ppt"))
+
+source_analyte_70_plot <- 
+  ggplot(source_analyte_above_70, aes(x = Sample.Date, y = ppt, color = Site)) +
+  geom_point(alpha = 0.5, size = 3)+
+  theme(axis.text.x = element_text(angle = 45, hjust = 1))+
+  theme(axis.text.x = element_text(size = 7))+
+  geom_hline(yintercept = 70, lty = 2)+
+  scale_y_continuous(breaks=c(70, 100, 200, 300, 400, 500, 600))+
+  theme(legend.position = "right", 
+        legend.text = element_text(size = 5), legend.title = element_text(size = 12))+
+  xlab("Sample Date")
+print(source_analyte_70_plot + ggtitle("Source sites with Analytes above 70 ppt"))
+```
+
+
+### Question 1e: [Tay] Total PFAS over 130
+
+```{r}
+
+#Total PFAS over 130
+
+# sum of pfas for every source site at that date
+# filter for those over 130
+# unique for how many sites had total pfas over 130
+
+#Source by Site and Date with sum PFAS above 130
+Total_PFAS_Source_Over130 <- 
+  PFAS_long_clean[!is.na(PFAS_long_clean$ppt),] %>%
+  filter (Type == "Source") %>%
+  filter(Analyte == "PFBA"| Analyte == "PFBS" | Analyte == "PFDS" | Analyte == "PFDA" | Analyte == "PFDoA" | Analyte == "PFHpS" | Analyte == "PFHpA" | Analyte == "PFHxS" | Analyte == "PFHxA" | Analyte == "PFNS" | Analyte == "PFNA" | Analyte == "PFOSA" | Analyte == "N.EtFOSAA" | Analyte == "N.MeFOSAA" | Analyte == "PFPeS" | Analyte == "PFPeA" | Analyte == "PFTeA" | Analyte == "PFTriA" | Analyte == "PFUnA" | Analyte == "HFPO.DA" | Analyte == "PFOA" | Analyte == "PFOS") %>%
+  group_by(Site, Sample.Date)%>%
+  summarise(sum_pfas = sum(ppt))%>%
+  filter (sum_pfas > 130)
+
+unique(Total_PFAS_Source_Over130$Site)
+
+#Plotting sites above 130
+source_total_pfas_130_plot <- 
+  ggplot(Total_PFAS_Source_Over130, aes(x = Sample.Date, y = sum_pfas, color = Site)) +
+  geom_point(alpha = 0.7, size = 5)+
+  theme(axis.text.x = element_text(angle = 45, hjust = 1))+
+  theme(axis.text.x = element_text(size = 7))+
+  geom_hline(yintercept = 130, lty = 2)+
+  scale_y_continuous(breaks=c(130, 200, 400, 600, 800, 1200))+
+  theme(legend.position = "right", 
+        legend.text = element_text(size = 5), legend.title = element_text(size = 12))+
+  xlab("Sample Date")+
+  ylab("Total PFAS (ppt)")
+print(source_total_pfas_130_plot + ggtitle("Source Sites with Total PFAS Above 130 ppt"))
+```
+
+### Question 1f: Temporal relationships?
+
+```{r}
+
+```
+
+
+## Question 2: Source Data ND/Qualifiers
+
+### Question 2a: [Tay] Summary Stats: ND below 5; ND below 10; ND below 20 (distrubtion bell curve)
+
+```{r}
+source_ND_under30 <-
+  PFAS_long_clean[!is.na(PFAS_long_clean$limit),] %>%
+  filter(Type == "Source") %>%
+  filter(limit < 30)
+
+source_ND_above30 <-
+  PFAS_long_clean[!is.na(PFAS_long_clean$limit),] %>%
+  filter(Type == "Source") %>%
+  filter(limit > 30)
+
+summary(source_ND_under30)
+summary(source_ND_above30)
+
+ggplot(source_ND_under30)+
+  geom_histogram(aes(x=limit))+
+  xlab("ND under 30 ppt")+
+  ylab("# of Samples")
+
+ggplot(source_ND_above30)+
+  geom_histogram(aes(x=limit), binwidth = 0.4)+
+  xlab("ND above 30 ppt")+
+  ylab("# of Samples")
+```
+
+
+
+### Question 2b: [Tay] Percentages (how many ND / total detections under 30) within any. Within GenX. See how many of which analytes have the worst percentage ratios --> play with those trends
+
+```{r}
+
+```
+
+
+### Question 2c: [Tay] ND: Variability of lab qualifiers (know the level is above/below U) - by analyte per Source
+
+```{r}
+
+```
+
+
+
+## Question 3: WWTP Analytes
+
+### Question 3a: PFOA, PFOS, GenX, sum PFAS accross sites (by month, facet wrap)
+
+```{r}
+
+
+
+```
+
+
+### Question 3b: Top 3? 5? analytes (aka are there analytes we aren't looking at) -- by chain length
+```{r}
+
+
+```
+
+
+### Question 3c: Within a plant, is there a temporal trend (facet_wrap; 25 rows)
+```{r}
+
+```
+
+
+### Question 3d: Long vs Short
+
+```{r}
+
+
+
+```
+
+### Question 3e: [Tay] Are any spots with one analyte over 70? over 30?
+
+```{r}
+wwtp_analyte_above_30 <- 
+  PFAS_long_clean %>%
+  filter(Type == "WWTP") %>%
+  filter(ppt > 30)
+
+wwtp_analyte_above_70 <- 
+  PFAS_long_clean %>%
+  filter(Type == "WWTP") %>%
+  filter(ppt > 70)
+
+unique(wwtp_analyte_above_30$Site) #21 Sites above 30 
+unique(wwtp_analyte_above_70$Site) #13 sites above 70
+
+#Plotting WWTP anayltes over the ppt standards
+wwtp_analyte_30_plot <- 
+  ggplot(wwtp_analyte_above_30, aes(x = Sample.Date, y = ppt, color = Site)) +
+  geom_point(alpha = 0.5, size = 3)+
+  theme(axis.text.x = element_text(angle = 45, hjust = 1))+
+  theme(axis.text.x = element_text(size = 7))+
+  geom_hline(yintercept = 30, lty = 2)+
+  scale_y_continuous(breaks=c(30, 100, 200, 400, 800, 1000))+
+  theme(legend.position = "right", 
+        legend.text = element_text(size = 5), legend.title = element_text(size = 12))+
+  xlab("Sample Date")
+print(wwtp_analyte_30_plot + ggtitle("WWTP sites with Analytes above 30 ppt"))
+
+wwtp_analyte_70_plot <- 
+  ggplot(wwtp_analyte_above_70, aes(x = Sample.Date, y = ppt, color = Site)) +
+  geom_point(alpha = 0.5, size = 3)+
+  theme(axis.text.x = element_text(angle = 45, hjust = 1))+
+  theme(axis.text.x = element_text(size = 7))+
+  geom_hline(yintercept = 70, lty = 2)+
+  scale_y_continuous(breaks=c(70, 200, 400, 800, 1000))+
+  theme(legend.position = "right", 
+        legend.text = element_text(size = 5), legend.title = element_text(size = 12))+
+  xlab("Sample Date")
+print(wwtp_analyte_70_plot + ggtitle("WWTP sites with Analytes above 70 ppt"))
+```
+
+### Question 3f: [Tay] Total PFAS over 130
+
+```{r}
+#WWTP by Site and Date with sum PFAS above 130
+Total_PFAS_WWTP_Over130 <- 
+  PFAS_long_clean[!is.na(PFAS_long_clean$ppt),] %>%
+  filter (Type == "WWTP") %>%
+  filter(Analyte == "PFBA"| Analyte == "PFBS" | Analyte == "PFDS" | Analyte == "PFDA" | Analyte == "PFDoA" | Analyte == "PFHpS" | Analyte == "PFHpA" | Analyte == "PFHxS" | Analyte == "PFHxA" | Analyte == "PFNS" | Analyte == "PFNA" | Analyte == "PFOSA" | Analyte == "N.EtFOSAA" | Analyte == "N.MeFOSAA" | Analyte == "PFPeS" | Analyte == "PFPeA" | Analyte == "PFTeA" | Analyte == "PFTriA" | Analyte == "PFUnA" | Analyte == "HFPO.DA" | Analyte == "PFOA" | Analyte == "PFOS") %>%
+  group_by(Site, Sample.Date)%>%
+  summarise(sum_pfas = sum(ppt))%>%
+  filter (sum_pfas > 130)
+
+unique(Total_PFAS_Source_Over130$Site)
+
+#Plotting sites above 130
+wwtp_total_pfas_130_plot <- 
+  ggplot(Total_PFAS_WWTP_Over130, aes(x = Sample.Date, y = sum_pfas, color = Site)) +
+  geom_point(alpha = 0.7, size = 5)+
+  theme(axis.text.x = element_text(angle = 45, hjust = 1))+
+  theme(axis.text.x = element_text(size = 7))+
+  geom_hline(yintercept = 130, lty = 2)+
+  scale_y_continuous(breaks=c(130, 400, 600, 800, 1200, 1800, 2400))+
+  theme(legend.position = "right", 
+        legend.text = element_text(size = 6), legend.title = element_text(size = 12))+
+  xlab("Sample Date")+
+  ylab("Total PFAS (ppt)")
+print(wwtp_total_pfas_130_plot + ggtitle("WWTP Sites with Total PFAS Above 130 ppt"))
+```
+
+
+
+
+
+## Question 4: WWTP ND/Qualifiers
+
+### Question 4a: [Tay] Summary Stats: ND below 5; ND below 10; ND below 20 (distrubtion bell curve)
+
+```{r}
+wwtp_ND_under5 <-
+  PFAS_long_clean[!is.na(PFAS_long_clean$limit),] %>%
+  filter(Type == "WWTP") %>%
+  filter(limit < 5)
+
+wwtp_ND_under10 <-
+  PFAS_long_clean[!is.na(PFAS_long_clean$limit),] %>%
+  filter(Type == "WWTP") %>%
+  filter(limit < 10)
+
+wwtp_ND_under20 <-
+  PFAS_long_clean[!is.na(PFAS_long_clean$limit),] %>%
+  filter(Type == "WWTP") %>%
+  filter(limit < 20)
+
+summary(wwtp_ND_under5)
+summary(wwtp_ND_under10)
+summary(wwtp_ND_under20)
+
+ggplot(wwtp_ND_under5)+
+  geom_histogram(aes(x=limit))+
+  xlab("ND under 5 ppt")+
+  ylab("# of Samples")
+
+ggplot(wwtp_ND_under10)+
+  geom_histogram(aes(x=limit))+
+  xlab("ND under 10 ppt")+
+  ylab("# of Samples")
+
+ggplot(wwtp_ND_under20)+
+  geom_histogram(aes(x=limit))+
+  xlab("ND under 20 ppt")+
+  ylab("# of Samples")
+```
+
+### Question 4b: [Tay] Percentages (how many ND / total detections under 30) within any. Within GenX. See how many of which analytes have the worst percentage rations --> play with those trends
+
+```{r}
+
+```
+
+### Question 4c: [Tay] ND: Variability of lab qualifiers (know the level is above/below U) - by analyte per WWTP
+
+```{r}
+
+```
+
+
