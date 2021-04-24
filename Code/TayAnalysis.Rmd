@@ -203,35 +203,33 @@ print(source_total_pfas_130_plot + ggtitle("Source Sites with Total PFAS Above 1
 ### Question 2a: [Tay] Summary Stats: ND below 5; ND below 10; ND below 20 (distrubtion bell curve)
 
 ```{r}
-source_ND_under5 <-
+source_ND_under30 <-
   PFAS_long_clean[!is.na(PFAS_long_clean$limit),] %>%
   filter(Type == "Source") %>%
-  filter(limit < 5)
+  filter(limit < 30)
 
-source_ND_under10 <-
+source_ND_above30 <-
   PFAS_long_clean[!is.na(PFAS_long_clean$limit),] %>%
   filter(Type == "Source") %>%
-  filter(limit < 10)
+  filter(limit > 30)
 
-source_ND_under20 <-
-  PFAS_long_clean[!is.na(PFAS_long_clean$limit),] %>%
-  filter(Type == "Source") %>%
-  filter(limit < 20)
+summary(source_ND_under30)
+summary(source_ND_above30)
 
-summary(source_ND_under5)
-summary(source_ND_under10)
-summary(source_ND_under20)
-
-#histograms for ND below 5 and 10 are pointless
-ggplot(source_ND_under20)+
+ggplot(source_ND_under30)+
   geom_histogram(aes(x=limit))+
-  xlab("ND under 20 ppt")+
+  xlab("ND under 30 ppt")+
+  ylab("# of Samples")
+
+ggplot(source_ND_above30)+
+  geom_histogram(aes(x=limit), binwidth = 0.4)+
+  xlab("ND above 30 ppt")+
   ylab("# of Samples")
 ```
 
 
 
-### Question 2b: [Tay] Percentages (how many ND / total detections under 30) within any. Within GenX. See how many of which analytes have the worst percentage rations --> play with those trends
+### Question 2b: [Tay] Percentages (how many ND / total detections under 30) within any. Within GenX. See how many of which analytes have the worst percentage ratios --> play with those trends
 
 ```{r}
 
