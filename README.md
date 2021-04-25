@@ -14,19 +14,19 @@ PFAS
 PFOA
 Gen-x
 Analyte
-Per- and polyfluoroalkyl substances
+Per- and polyfluoroalkyl substances (PFAS)
 Water Contamination
 North Carolina Water
 Water Quality
+Point source pollution
 
 ## Database Information
 
-Raw data comes from two sources: The 2018 EPA public supply data for NC and the 2019 Waste Water Treatment Plants of NC. This data was accessed in 2020 by Karly Nocera.
-Processed data was created by Karly Nocera and Tay Holliday in 2021. These processed datasets combine the EPA source data and the waste water treament plants data. These datasets also create various new objects to help in analysis.
+Raw data comes from North Carolina's Department of Environmental Quality (DEQ) in two datasets: (1) The 2018 Emerging Compounds Monitoring Reports of various watersheds and public water supply (PWS) reservoirs and (2) 2019 wastewater treatment plant (WWTP) samples, both accessed by Karly Nocera in 2020. Processed data was created by Karly Nocera and Tay Holliday in 2021, creating new fields to help in analysis.
 
 ## Folder structure, file formats, and naming conventions 
 
-There are 2 main folders within the repository: Code and Data. The Data folder contains two sub-folders: Processed and Raw. Within the raw folder are csv files containing data obtained from the EPA and Waste Water Treatment Plants. Within the Processed folder are csv files that have been wrangled through the data wrangling code within the code folder. In the code folder there are 5 markdown files of R code. There is a project template markdown file with which was used to create the analysis markdown files. There is the explore markdown file that explores the data in a visual and informative way. There is a wrangle markdown file which is R code that takes raw data from the raw data file and creates a much neater and easier to use processed data csv file. Finally, there are two analysis markdown files, one for each investigator to answer various questions about the PFAS processed data.
+There are 3 main folders within the repository: Code, Data, and Output. The Data folder contains two sub-folders: Processed and Raw. Within the raw folder are csv files containing data obtained from the EPA and Waste Water Treatment Plants. Within the Processed folder are csv files that have been wrangled through the data wrangling code within the code folder. In the code folder there are 5 R markdown files: (1) A project template markdown file with which was the foundation to create the final project; (2) A wrangle markdown file which is R code that takes raw data from the raw data file and creates a much neater and easier to use processed data csv file; (3) An explore markdown file that explores the data in a visual and informative way; (4) An analysis file to answer visual analyses; and (5) a final markdown file combining the codes for submission.
 
 CSV files contain the data used in this repository. R Markdown files contain the R code with which the data is run through.
 
@@ -67,11 +67,11 @@ sitetype.csv
 
 ## Scripts and code
 
-ProjectTemplate.Rmd was used to create the analysis markdown files.
-PFAS_explore.Rmd is used to explore the data quickly.
+ProjectTemplate.Rmd was the foundation to the clean, explore, anad analysis files.
 PFAS_Wrangle.Rmd is used to tidy the raw data into clean processed datasets.
-PFAS_analysis_KN.Rmd and TayAnalysis.Rmd are both Analysis scripts written by each investigator to perform various analysis.
-PFAS_analysis.Rmd is a combined script including both Karly and Tay's markdown scripts.
+PFAS_explore.Rmd is used to explore the data quickly.
+PFAS_analysis.Rmd is the analysis script combined from both authors to perform various analysis.
+PFAS_final.Rmd is the final combined script based on the Project Template.
 
 ## Quality assurance/quality control
 
