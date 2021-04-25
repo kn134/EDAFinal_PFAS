@@ -144,19 +144,32 @@ PFAS_Source <-
   select(Site:chain.length,lat,long)
 
 ```
+```{r}
+
+PFAS_WWTP_wide <- as.data.frame(PFAS_WWTP_wide)
+
+PFAS_Source_wide <- as.data.frame(PFAS_Source_wide)
+
+PFAS_Source_wide = data.frame(lapply(PFAS_Source_wide, as.character), stringsAsFactors=FALSE)
+
+```
 
 
 # save processed files
 
 ```{r}
 
-# bound PFAS_wide
+# WWTP
 
-write.csv(PFAS_wide_clean, row.names=FALSE, file = "./Data/Processed/PFAS_wide_clean.csv")
+write.csv(PFAS_WWTP, row.names=FALSE, file = "./Data/Processed/PFAS_WWTP_clean.csv")
 
-# PFAS_clean(er)
+write.csv(PFAS_WWTP_wide, row.names=FALSE, file = "./Data/Processed/PFAS_WWTP_wide_clean.csv")
 
-write.csv(PFAS_long_clean, row.names=FALSE, file = "./Data/Processed/PFAS_long_clean.csv")
+# Source
+
+write.csv(PFAS_Source, row.names=FALSE, file = "./Data/Processed/PFAS_Source_clean.csv")
+
+write.csv(PFAS_Source_wide, row.names=FALSE, file = "./Data/Processed/PFAS_Source_wide_clean.csv")
 
 ```
 
