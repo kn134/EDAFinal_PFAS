@@ -163,12 +163,17 @@ ggplot(subset(PFAS_WWTP_clean, Analyte %in% c("PFOA", "PFOS", "PFBA", "PFHxA", "
   ggtitle("Number of Analyte Samples by Level at WWTP")
 
 ### Source 
-ggplot(subset(PFAS_Source_clean, Analyte %in% c("PFOA", "PFOS", "PFBA", "PFHxA", "PFHpA", "PFPeA"))) +
-  geom_freqpoly(aes(x = ppt, color = Analyte), bins = 50) +
-  scale_x_continuous(limits = c(0, 250)) +
-  theme(legend.position = "top") +
-  labs(x = "PPT", y = "Number of Samples") +
-  ggtitle("Number of Analyte Samples by Level at Source Sites")
+♣
+
+
+
+# density analytes ridges
+
+library(ggridges)
+
+ggplot(subset(PFAS_WWTP_clean, Analyte %in% c("PFOA", "PFOS", "PFBA", "PFHxA", "PFNA", "PFBS", "6.2", "PFHpA", "PFPeA")), aes(y = Analyte, x = ppt)) +
+  geom_density_ridges(aes(fill = Site), alpha = 0.5) +
+  xlim(0,1010)
 
 ```
 
