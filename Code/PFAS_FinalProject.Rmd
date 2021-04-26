@@ -6,9 +6,9 @@ output:
     number_sections: yes
 geometry: margin=2.54cm
 title: "PFAS Levels in North Carolina"
-subtitle: "Web address for GitHub repository"
+subtitle: "https://github.com/kn134/EDAFinal_PFAS.git"
 author: "Karly Nocera and Tay Holliday"
-date: "4/23/21"
+date: "4/26/2021"
 fontsize: 12pt
 mainfont: Times New Roman
 ---
@@ -20,9 +20,9 @@ mainfont: Times New Roman
 \listoffigures 
 \newpage
 
-```{r setup, include=FALSE}
+```{r setup}
 #sets the default values of chunk options
-knitr::opts_chunk$set(echo = TRUE)
+knitr::opts_chunk$set(echo = FALSE, fig.width = 10, fig.height = 10)
 ```
 
 * Knitting commands in code chunks:
@@ -34,65 +34,653 @@ knitr::opts_chunk$set(echo = TRUE)
  - `fig.cap = "..."` - adds a caption to graphical results
  
 
-```{r setup, include=FALSE}
+```{r, include = FALSE}
 # Set your working directory
+
+getwd()
 
 # Load your packages
 
+library(tidyverse)
+library(lubridate)
+library(knitr)
+library(data.table)
+library(dplyr)
+library(formattable)
+library(tidyr)
+library(ggridges)
+library(scales)
+# install.packages("summarytools")
+library(summarytools)
+
+library(sf)
+library(leaflet)
+library(mapview)
+library(RColorBrewer)
+
 # Set your ggplot theme
 
+mytheme <- theme_classic(base_size = 14) +
+  theme(axis.text = element_text(color = "black"), 
+        legend.position = "top")
+theme_set(mytheme)
+
 # Load your datasets
+
+PFAS_WWTP_clean <- read.csv("./Data/Processed/PFAS_WWTP_clean.csv", stringsAsFactors = TRUE)
+
+PFAS_WWTP_wide_clean <- read.csv("./Data/Processed/PFAS_WWTP_wide_clean.csv", stringsAsFactors = TRUE)
+
+PFAS_Source_clean <- read.csv("./Data/Processed/PFAS_Source_clean.csv", stringsAsFactors = TRUE)
+
+PFAS_Source_wide_clean <- read.csv("./Data/Processed/PFAS_Source_wide_clean.csv", stringsAsFactors = TRUE)
 
 ```
 
 
 # Rationale and Research Questions
 
-### Rationale and Research Questions
-Write 1-2 paragraph(s) detailing the rationale for your study. This should include both the context of the topic as well as a rationale for your choice of dataset (reason for location, variables, etc.). You may choose to include citations if you like (optional).
+The purpose of this study was to synthesize and analyze the findings of local water quality samples measuring a group of emerging contaminants, PFAS (per- and polyfluoroalkyl substances). The two datasets from DEQ (2018 Emerging Compounds Monitoring Reports of various watersheds and public water supply (PWS) reservoirs and the 2019 wastewater treatment plant (WWTP) samples) were chosen as the only publicly-available datasets on local PFAS levels. The sample locations and variables were pre-determined by the study, but these datasets reflect locations and variables pertaining to the levels of various PFAS analytes in the drinking water and water bodies associated with 2.7 million North Carolina residents.
 
-At the end of your rationale, introduce a numbered list of your questions (or an overarching question and sub-questions). 
+Our study aims to explore and analyze this data in order to begin building the larger story of local contamination and identify areas of concern that need further investigation. To do so, we answered the following questions:
 
+1. Occurence
++ What are the most abundant analytes present?
++ Which sites have analytes exceeding health advisory levels?
++ What chain lengths are most abundant and present?
++ What portion of total PFAS are PFOA and PFOS?
 
+2. Distribution
++ Are there bodies of water with concerningly high levels of PFAS that aren't commonly discussed?
++ How does total PFAS change over time?
+
+3. Unreported / Further Investigation
++ What is the highest reporting limit for each analyte?
++ How many samples had reporting limits above health advisory levels?
++ What percentage of total unreported results were below health advisory limits?
 
 \newpage
 
 # Dataset Information
-Provide information on how the dataset for this analysis were collected, the data contained in the dataset, and any important pieces of information that are relevant to your analyses. This section should contain much of same information as the metadata file for the dataset but formatted in a way that is more narrative.
 
-Describe how you wrangled your dataset in a format similar to a methods section of a journal article.
+The two datasets were downloaded from North Carolina DEQ: [2018 Analytical Results for PFAS Screening of Select Public Water Supply (PWS) Reservoirs](https://deq.nc.gov/about/divisions/water-resources/water-resources-science-and-data/water-sciences-home-page/emerging) and [2019 publicaly owned utilities with pretreatment programs (POTWs) and industrial dischargers with state permits](https://files.nc.gov/ncdeq/Water%20Resources/GIS/Data/Emerging_Compounds_Mastersheet_12202019.pdf). Respective to their type of site, both datasets contained site location, sample date, PFAS analyte levels (nanograms per liter (ng/L) or equivalent parts per trillion (ppt)), and lab qualifiers/reporting limits. To substantiate this analysis, we incorporated a manually created csv file identifying the latitude and longitude of sample sites, and researched analytes' chain length (short or long).
 
-Add a table that summarizes your data structure (variables, units, ranges and/or central tendencies, data source if multiple are used, etc.). This table can be made in markdown text or inserted as a `kable` function in an R chunk. If the latter, do not include the code used to generate your table.
+Due to the nature of their original format, both datasets needed extensive cleaning prior to importing to R and further exploration and analysis. The POTW data was originally in a PDF and first needed to be converted (using SmallPDF tool) to an excel spreadsheet. These values were then manually moved intoa dataset layout (column headings, rows for each analyte sampled). The PWS dataset was already a csv dataset. For both, analytes with dashes (-) needed to be replaced with a different character (.) in order to read into R and column names were changed to be consistent with other. The lab qualifiers were split so that there was a unique column of numeric reporting limits and in PWS the "results" value was deleted because it was actually the reporting limit and not a result, despite being originally in that column (indicated with corresponding lab qualifier characters).
 
-Dataset Names | Information
+Once these three datasets were imported into R Studio, both POTW and PWS needed the "sample date" column formatted as a date class and unnecessary columns were removed. To pivot each wider for future use, their reporting limit column was removed and then each pivoted wider so that each analyte became a column with its corresponding parts per trillion measurement. We then mutated both datasets to create columns for Total PFAS, the sum of PFOA and PFOS (due to health advisory regulation), the sum of all short-chained PFAS, and the sum of all long-chained PFAS. 
+
+To create a column for chain length in the original long datasets, we used a function to determine if each analyte was short or long, adding the result in the column. Then, both were joined to the imported location dataset so each site had a longitude and latitude. These cleaned files were then saved in the Data>>Processed folder as csv.
+
+Data Structure | Value
 --------------|-------------
-EPAair_O3_NC2018_raw|2018 EPA air samples of ozone levels in North Carolina
-
+Variables|Site, Analyte, ppt, Total PFAS, Sum PFOA PFOS, short-chain, long-chain, latitude, longitude
+Units|parts per trillion (ppt) or equivalent nanograms per liter (ng/L)
+Range|2650 (POTW) and 552 (PWS)
+Skew|14.28 (POTW) and 3.56 (PWS)
+Kertosis|254.5 (POTW) and 15.2 (PWS)
+Links to Data Sources|[2018 PWS](https://deq.nc.gov/about/divisions/water-resources/water-resources-science-and-data/water-sciences-home-page/emerging) and [2019 POTWs](https://files.nc.gov/ncdeq/Water%20Resources/GIS/Data/Emerging_Compounds_Mastersheet_12202019.pdf)
 
 
 \newpage
 
 # Exploratory Analysis 
-Insert exploratory visualizations of your dataset. This may include, but is not limited to, graphs illustrating the distributions of variables of interest and/or maps of the spatial context of your dataset. Format your R chunks so that graphs are displayed but code is not displayed. Accompany these graphs with text sections that describe the visualizations and provide context for further analyses.
 
-Each figure should be accompanied by a caption, and each figure should be referenced within the text. 
 
-Scope: think about what information someone might want to know about the dataset before analyzing it statistically. How might you visualize this information? 
 
+```{r}
+
+## Map of POTW Samples
+
+# PFAS_WWTP_wide_sf <-
+#   PFAS_WWTP_wide_clean %>%
+#   select(lat, long, Site:Type)
+# 
+# PFAS_WWTP_wide_sf <- 
+#   PFAS_WWTP_wide_sf %>% 
+#   group_by(Site, lat, long, TotalPFAS) %>% 
+#   st_as_sf(coords = c('long','lat'), crs=4269)
+# 
+# mapview(PFAS_WWTP_wide_sf)
+
+```
+
+## Unique analytes
+
+45 unique analytes were found in POTW samples and 23 in PWS. The following two tables display the most abundant analytes found in each set of site samples.
+
+```{r}
+unique_WWTP <- 
+  PFAS_WWTP_clean %>%
+  group_by(Analyte) %>%
+  summarise(non_na_count = sum(!is.na(ppt))) %>%
+  arrange(desc(non_na_count)) %>%
+  rename(Count= non_na_count)
+
+unique_Source <- 
+  PFAS_Source_clean %>%
+  group_by(Analyte) %>%
+  summarise(non_na_count = sum(!is.na(ppt))) %>%
+  arrange(desc(non_na_count)) %>%
+  rename(Count= non_na_count)
+
+top10_wwtp <- head(unique_WWTP, 10)
+top10_source <- head(unique_Source, 10)
+
+#dim(unique_WWTP)[1] #45
+#dim(unique_Source)[1] #23
+
+# colors for table
+
+customGreen0 = "#DeF7E9"
+customGreen = "#71CA97"
+customRed = "#ff7f7f"
+
+# tables
+
+knitr::kable(top10_wwtp, caption = "Top 10 Abundant Analytes in POTW")
+
+knitr::kable(top10_source, caption = "Top 10 Abundant Analytes in PWS")
+
+# formattable(top10_wwtp)
+# formattable(top10_source)
+```
+
+## Number of samples with each analyte
+
+The following histograms visualize the number of samples of each analyte. Same as above, the abundnace indicates which PFAS are most commonly present. This is relevant for regulation and possibly tracking contaminant sources.
+
+```{r plotN, echo=FALSE, fig.align = 'left', fig.cap = "Number of Samples in POTW"}
+
+# visualize count data for categorical variables (how many samples of each analyte)
+
+ggplot(PFAS_WWTP_clean, aes(x = Analyte)) +
+  geom_bar(data = PFAS_WWTP_clean %>% filter(ppt != "NA")) +    labs(x = "Analyte", y = "Count") +
+  theme(axis.text.x = element_text(angle = 90,  hjust = 1))
+
+#knitr::kable(countsample_wwtp, caption = "Number of Samples by Analyte in POTW")
+
+```
+```{r plotW, echo=FALSE, fig.align = 'left', fig.cap = "Number of Samples in PWS"}
+
+ggplot(PFAS_Source_clean, aes(x = Analyte)) +
+  geom_bar(data = PFAS_WWTP_clean %>% filter(ppt != "NA")) +    labs(x = "Analyte", y = "Count") +
+  theme(axis.text.x = element_text(angle = 90,  hjust = 1))
+
+#knitr::kable(countsample_source, caption = "Number of Samples by Analyte in PWS")
+
+```
+
+## Number of Select Analytes by Level 
+
+The following histograms visualize the number of samples of PFAS levels. The abundnace indicates which PFAS are most commonly present and which analytes have a high count at higher levels (ppt). This is relevant for regulation and possibly tracking contaminant sources.
+
+```{r, fig.align = 'left', fig.cap = "Number of Samples by Level in POTW"}
+
+## REMOVE WARNING
+
+ggplot(subset(PFAS_WWTP_clean, Analyte %in% c("PFOA", "PFOS", "PFBA", "PFHxA", "PFNA", "PFBS", "6.2", "PFHpA", "PFPeA"))) +
+  geom_freqpoly(aes(x = ppt, color = Analyte), bins = 50) +
+  scale_x_continuous(limits = c(0, 250)) +
+  theme(legend.position = "top") +
+  labs(x = "Value (ppt)", y = "Count")
+
+```
+
+```{r, fig.align = 'left', fig.cap = "Number of Samples by Level in PWS"}
+
+## REMOVE WARNING
+
+ggplot(subset(PFAS_Source_clean, Analyte %in% c("PFOA", "PFOS", "PFBA", "PFHxA", "PFNA", "PFBS", "6.2", "PFHpA", "PFPeA"))) +
+  geom_freqpoly(aes(x = ppt, color = Analyte), bins = 50) +
+  scale_x_continuous(limits = c(0, 400)) +
+  theme(legend.position = "top") +
+  labs(x = "Value (ppt)", y = "Count")
+
+```
+
+## Density ridge lines of select analytes
+
+A closer look the count of analyte samples by value (ppt) indicates which analytes have frequently high values. This is valuable knowledge to begin analyzing whether high levels are an isolated event or consistently high.
+
+```{r, fig.align = 'left', fig.cap = "Density Ridges of Select Analytes by Level in POTW"}
+
+ggplot(subset(PFAS_WWTP_clean, Analyte %in% c("PFOA", "PFOS", "PFBA", "PFHxA", "PFNA", "PFBS", "6.2", "PFHpA", "PFPeA")), aes(y = Analyte, x = ppt)) +
+  geom_density_ridges(aes(fill = Site), alpha = 0.5) +
+  xlim(0,1010) +
+  theme(legend.position = "top")
+
+```
+
+```{r, fig.align = 'left', fig.cap = "Density Ridges of Select Analytes by Level in PWS"}
+
+ggplot(subset(PFAS_Source_clean, Analyte %in% c("PFOA", "PFOS", "PFBA", "PFHxA", "PFNA", "PFBS", "6.2", "PFHpA", "PFPeA")), aes(y = Analyte, x = ppt)) +
+  geom_density_ridges(aes(fill = Site), alpha = 0.5) +
+  xlim(0,400) +
+  theme(legend.position = "right")
+
+```
+
+## Distribution of PFOA and PFOS samples
+
+Violin plots illustrating the distribution of PFOA and PFOS in both sample site types indicate the quartiles of both analytes. This is important for understanding the PFAS levels where the bulk of samples occured.
+
+```{r, fig.align = 'left', fig.cap = "Violin Plots of PFOA and PFOS in POTW"}
+
+ggplot(subset(PFAS_WWTP_clean,Analyte %in% c("PFOA", "PFOS"))) +
+  geom_violin(aes(x = Analyte, y = ppt), 
+              draw_quantiles = c(0.25, 0.5, 0.75)) +
+  scale_y_continuous(limits = c(0, 100))
+
+```
+
+```{r, fig.align = 'left', fig.cap = "Violin Plots of PFOA and PFOS in PWS"}
+
+ggplot(subset(PFAS_Source_clean,Analyte %in% c("PFOA", "PFOS"))) +
+  geom_violin(aes(x = Analyte, y = ppt), 
+              draw_quantiles = c(0.25, 0.5, 0.75)) +
+  scale_y_continuous(breaks= pretty_breaks())
+
+```
+
+```{r}
+
+# They are followed by tables of summary statistics.
+
+# knitr::kable(summary_wwtp_pfoa, caption = "PFOA Summary Statistics in POTW")
+# 
+# knitr::kable(summary_source_pfoa, caption = "PFOA Summary Statistics in PWS")
+# 
+# knitr::kable(summary_wwtp_pfos, caption = "PFOS Summary Statistics in POTW")
+# 
+# knitr::kable(summary_source_pfos, caption = "PFOS Summary Statistics in PWS")
+
+```
+
+## PFOA/PFOS exceeding health advisory in POTW
+
+These tables shows the three sites that had the sum of PFOA and PFOS over 70ppt (EPA's health advisory level) during the three-month testing samples.
+
+```{r}
+
+wwtp_pfoa.pfos_table <-
+  PFAS_WWTP_wide_clean %>%
+  select(Site, PFOA, PFOS, SumPFOA.PFOS, Sample.Date) %>%
+  filter(Site %in% c("Sanford-Big.Buffalo.Creek.WWTP", "City.of.Raeford", "East.Burlington.WWTP")) %>%
+  arrange(Site) %>%
+  rename(Sum = SumPFOA.PFOS)
+
+knitr::kable(wwtp_pfoa.pfos_table, caption = "Sites Exceeding EPA Health Advisory Limit")
+             
+#wwtp_pfoa.pfos_table
+
+#formattable(wwtp_pfoa.pfos_table, list(`Sum` = color_bar(customRed)))
+
+```
+
+## Maximum reporting limits per analyte
+
+If an analyte was measured below a reporting limit (ppt), it was not reported. Particularly high reporting limits are concerning because it indicates that there are sites that may have high levels of PFAS that are overlooked. While there is no specific value that is "too" high, long-chain PFAS are a known health risk at lower levels (e.g., 8ppt). These tables indicate the maximum reporting limits that occured for each analyte sampled. 
+
+```{r}
+
+wwtp_reporting <-
+  PFAS_WWTP_clean %>%
+  group_by(Analyte) %>%
+  summarise(MaxReport = max(lab.qual, na.rm = T)) %>%
+  arrange(desc(MaxReport))
+
+source_reporting <-
+  PFAS_Source_clean %>%
+  group_by(Analyte) %>%
+  summarise(MaxReport = max(lab.qual, na.rm = T)) %>%
+  arrange(desc(MaxReport))
+
+knitr::kable(wwtp_reporting, col.names = c("Analyte", "Max. Reporting Limit"), caption = "Max. Reporting Limits of Each Analyte in POTW")
+
+knitr::kable(source_reporting, col.names = c("Analyte", "Max. Reporting Limit"), caption = "Max. Reporting Limits of Each Analyte in PWS")
+
+# formattable(wwtp_reporting)
+# formattable(source_reporting)
+
+```
 
 \newpage
 
 # Analysis
 
-Insert visualizations and text describing your main analyses. Format your R chunks so that graphs are displayed but code and other output is not displayed. Instead, describe the results of any statistical tests in the main text (e.g., "Variable x was significantly different among y groups (ANOVA; df = 300, F = 5.55, p < 0.0001)"). Each paragraph, accompanied by one or more visualizations, should describe the major findings and how they relate to the question and hypotheses. Divide this section into subsections, one for each research question.
+Each paragraph, accompanied by one or more visualizations, should describe the major findings and how they relate to the  question and hypotheses. 
 
-Each figure should be accompanied by a caption, and each figure should be referenced within the text
+## Question 1: Occurence
+### What are the most abundant analytes present?
+
+FILL IN
+
+```{r, fig.align = 'left', fig.cap = "Analytes Present in POTW Sites"}
+
+ggplot(PFAS_WWTP_clean, aes(fill=Analyte, y=ppt, x=Site)) +     geom_bar(position="stack", stat="identity") +
+    labs(fill = "Analyte") +
+    theme(axis.text.x=element_blank(),
+        axis.ticks.x=element_blank()) +
+  xlab("POTW Sites")
+
+```
+
+```{r, fig.align = 'left', fig.cap = "Analytes Present in PWS Sites"}
+
+ggplot(PFAS_Source_clean, aes(fill=Analyte, y=ppt, x=Site)) +     geom_bar(position="stack", stat="identity") +
+    labs(fill = "Analyte") +
+    theme(axis.text.x=element_blank(),
+        axis.ticks.x=element_blank()) +
+  xlab("PWS Sites")
+
+```
 
 
-## Question 1: <insert specific question here and add additional subsections for additional questions below, if needed>
+### Which sites have analytes exceeding health advisory levels?
 
-## Question 2: 
+FILL IN
 
+```{r}
+
+wwtp_analyte_above_30 <- 
+  PFAS_WWTP_clean %>%
+  filter(ppt > 30)
+
+wwtp_analyte_above_70 <- 
+  PFAS_WWTP_clean %>%
+  filter(ppt > 70)
+
+unique(wwtp_analyte_above_30$Site) #11 Sites above 30 
+unique(wwtp_analyte_above_70$Site) #5 sites above 70
+
+```
+
+```{r}
+
+source_analyte_above_30 <- 
+  PFAS_Source_clean %>%
+  filter(ppt > 30)
+
+source_analyte_above_70 <- 
+  PFAS_Source_clean %>%
+  filter(ppt > 70)
+
+unique(source_analyte_above_30$Site) #11 Sites above 30 
+unique(source_analyte_above_70$Site) #5 sites above 70
+
+```
+
+```{r, fig.align = 'left', fig.cap = "POTW Sites with Analytes Over 30ppt"}
+
+# plot over 30ppt
+wwtp_analyte_30_plot <- 
+  ggplot(wwtp_analyte_above_30, aes(x = Sample.Date, y = ppt, color = Site)) +
+  geom_point(alpha = 0.5, size = 3)+
+  theme(axis.text.x = element_text(angle = 45, hjust = 1))+
+  theme(axis.text.x = element_text(size = 7))+
+  geom_hline(yintercept = 30, lty = 2)+
+  scale_y_continuous(breaks=c(30, 100, 200, 300, 400, 500, 600))+
+  theme(legend.position = "right", 
+        legend.text = element_text(size = 5), legend.title = element_text(size = 12))+
+  xlab("Sample Date")
+
+print(wwtp_analyte_30_plot)
+
+```
+
+
+```{r, fig.align = 'left', fig.cap = "POTW Sites with Analytes Over 70ppt"}
+
+# plot over 70ppt
+wwtp_analyte_70_plot <- 
+  ggplot(wwtp_analyte_above_70, aes(x = Sample.Date, y = ppt, color = Site)) +
+  geom_point(alpha = 0.5, size = 3)+
+  theme(axis.text.x = element_text(angle = 45, hjust = 1))+
+  theme(axis.text.x = element_text(size = 7))+
+  geom_hline(yintercept = 70, lty = 2)+
+  scale_y_continuous(breaks=c(70, 100, 200, 300, 400, 500, 600))+
+  theme(legend.position = "right", 
+        legend.text = element_text(size = 5), legend.title = element_text(size = 12))+
+  xlab("Sample Date")
+
+print(wwtp_analyte_70_plot)
+
+```
+
+
+```{r, fig.align = 'left', fig.cap = "PWS Sites with Analytes Over 30ppt"}
+
+# plot over 30ppt
+source_analyte_30_plot <- 
+  ggplot(source_analyte_above_30, aes(x = Sample.Date, y = ppt, color = Site)) +
+  geom_point(alpha = 0.5, size = 3)+
+  theme(axis.text.x = element_text(angle = 45, hjust = 1))+
+  theme(axis.text.x = element_text(size = 7))+
+  geom_hline(yintercept = 30, lty = 2)+
+  scale_y_continuous(breaks=c(30, 100, 200, 300, 400, 500, 600))+
+  theme(legend.position = "right", 
+        legend.text = element_text(size = 5), legend.title = element_text(size = 12))+
+  xlab("Sample Date")
+
+print(source_analyte_30_plot)
+
+```
+
+
+```{r, fig.align = 'left', fig.cap = "PWS Sites with Analytes Over 70ppt"}
+
+# plot over 70ppt
+source_analyte_70_plot <- 
+  ggplot(source_analyte_above_70, aes(x = Sample.Date, y = ppt, color = Site)) +
+  geom_point(alpha = 0.5, size = 3)+
+  theme(axis.text.x = element_text(angle = 45, hjust = 1))+
+  theme(axis.text.x = element_text(size = 7))+
+  geom_hline(yintercept = 70, lty = 2)+
+  scale_y_continuous(breaks=c(70, 100, 200, 300, 400, 500, 600))+
+  theme(legend.position = "right", 
+        legend.text = element_text(size = 5), legend.title = element_text(size = 12))+
+  xlab("Sample Date")
+
+print(source_analyte_70_plot)
+
+```
+
+
+### What chain lengths are most abundant and present?
+
+FILL IN
+
+```{r, fig.align = 'left', fig.cap = "Total PFAS by Chain Length in POTW"}
+
+ggplot(subset(PFAS_WWTP_clean, !is.na(ppt)), aes(x = Site, y = ppt))+
+  geom_col(aes(fill = chain.length)) +
+  labs(fill = "Chain Length") +
+  xlab("WWTP Site") +
+  theme(axis.text.x = element_text(angle = 90,  hjust = 1))
+
+```
+
+```{r, fig.align = 'left', fig.cap = "Total PFAS by Chain Length in PWS"}
+
+ggplot(subset(PFAS_Source_clean, !is.na(ppt)), aes(x = Site, y = ppt))+
+  geom_col(aes(fill = chain.length)) +
+  labs(fill = "Chain Length") +
+  xlab("Source Site") +
+  theme(axis.text.x = element_text(angle = 90,  hjust = 1))
+
+```
+
+### What portion of total PFAS are PFOA and PFOS?
+
+FILL IN
+
+```{r, fig.align = 'left', fig.cap = "Proportion of PFOA and PFOS in Total PFAS at POTW Sites"}
+
+WWTP_sum.total <-
+  PFAS_WWTP_clean %>%
+  filter(Analyte %in% c("PFOA", "PFOS", "PFBA", "PFHxA", "PFNA", "PFBS", "PFHpA", "PFPeA"))
+
+cols <- c(PFOA="blue", PFOS="blue", PFBA="black", PFHxA="black", PFNA="black", PFBS="black", PFHpA="black", PFPeA="black")
+
+ggplot(WWTP_sum.total, aes(x=Site, y=ppt, fill=Analyte)) +
+  geom_bar(stat="identity", position = "dodge") +
+  scale_fill_manual(values = cols) +
+  xlab("WWTP Site")+
+  theme(axis.text.x = element_text(angle = 90,  hjust = 1),
+    legend.position="right")
+
+```
+
+
+
+
+
+## Question 2: Distribution
+### Are there bodies of drinking water sources with concerningly high levels of PFAS that aren't commonly discussed?
+
+FILL IN
+
+NEED TO BE ABLE TO SUM SOURCE DATASET
+
+```{r}
+
+# topsites_source <-
+#   PFAS_wide_clean %>%
+#   select(Site, TotalPFAS)
+# 
+# topsites_source <- topsites_source[with(topsites_source,order(-TotalPFAS)),]
+# 
+# topsites_source <- topsites_source[1:8,]
+# 
+# # facet wrap each site by x = analyte y = ppt
+# 
+# ggplot(topsites, aes(x = Site, y = TotalPFAS)) + 
+#   geom_bar(stat="identity") +
+#   facet_wrap(vars(Site), nrow = 5) +
+#   ylab("Total PFAS (ppt)") +
+#   theme(axis.text.x=element_blank(),
+#         axis.ticks.x=element_blank()) 
+
+```
+
+### How does total PFAS change over time?
+
+FILL IN
+
+```{r, fig.align = 'left', fig.cap = "Total PFAS Change Over Time in POTW"}
+
+PFAS_WWTP_wide_clean <-
+  PFAS_WWTP_wide_clean %>%
+  mutate(month = month(Sample.Date))
+
+ggplot(PFAS_WWTP_wide_clean, aes(x=month, y = TotalPFAS, group=Site)) +
+  geom_line(aes(color=Site)) +
+  geom_point(aes(color=Site)) +
+  scale_x_continuous(breaks=c(7, 8, 9)) +
+  ylab("Total PFAS (ppt)") +
+  xlab("2019 Month") +
+  theme(legend.position="right")
+
+```
+
+```{r, fig.align = 'left', fig.cap = "Total PFAS Change Over Time in Select POTW Sites"}
+
+ggplot(PFAS_WWTP_wide_clean, aes(x=month, y = TotalPFAS, group=Site)) +
+  geom_line(aes(color=Site)) +
+  geom_point(aes(color=Site)) +
+  scale_x_continuous(breaks=c(7, 8, 9)) +
+  ylim(0,600) +
+  ylab("Total PFAS (ppt)") +
+  xlab("2019 Month") +
+  theme(legend.position="right")
+
+```
+
+
+## Question 3: Further Investigation
+
+### How many samples had reporting limits above health advisory levels?
+
+FILL IN
+
+```{r}
+
+wwtp_ND_over10 <-
+  PFAS_WWTP_clean[!is.na(PFAS_WWTP_clean$lab.qual),] %>%
+  filter(lab.qual >= 30)
+
+ggplot(wwtp_ND_over10)+
+  geom_histogram(aes(x=lab.qual))+
+  xlab("Unreported Over 30 ppt")+
+  ylab("Sample Count")
+
+```
+
+### What percentage of total unreported results were below health advisory limits?
+
+FILL IN
+
+```{r}
+
+# of all the ND, how many are under 5
+
+# how many total
+wwtp_ND <-
+  PFAS_WWTP_clean[!is.na(PFAS_WWTP_clean$lab.qual),] %>%
+  filter(lab.qual > 0)
+
+# percentage under 10
+
+wwtp_ND_under10 <-
+  PFAS_WWTP_clean[!is.na(PFAS_WWTP_clean$lab.qual),] %>%
+  filter(lab.qual <= 10)
+
+wwtp_nd_percent10 = (dim(wwtp_ND_under10)[1] / dim(wwtp_ND)[1])*100
+
+wwtp_nd_percent10
+
+# percentage under 70
+
+wwtp_ND_under70 <-
+  PFAS_WWTP_clean[!is.na(PFAS_WWTP_clean$lab.qual),] %>%
+  filter(lab.qual <= 70)
+
+wwtp_nd_percent70 = (dim(wwtp_ND_under70)[1] / dim(wwtp_ND)[1])*100
+
+wwtp_nd_percent70
+
+```
+
+```{r}
+
+# of all the ND, how many are under 5
+
+# how many total
+source_ND <-
+  PFAS_Source_clean[!is.na(PFAS_Source_clean$lab.qual),] %>%
+  filter(lab.qual > 0)
+
+# percentage under 10
+
+source_ND_under10 <-
+  PFAS_Source_clean[!is.na(PFAS_Source_clean$lab.qual),] %>%
+  filter(lab.qual <= 10)
+
+source_nd_percent10 = (dim(source_ND_under10)[1] / dim(source_ND)[1])*100
+
+source_nd_percent10
+
+# percentage under 70
+
+source_ND_under70 <-
+  PFAS_Source_clean[!is.na(PFAS_Source_clean$lab.qual),] %>%
+  filter(lab.qual <= 70)
+
+source_nd_percent70 = (dim(source_ND_under70)[1] / dim(source_ND)[1])*100
+
+source_nd_percent70
+
+```
 
 
 
@@ -104,7 +692,4 @@ Summarize your major findings from your analyses in a few paragraphs. What concl
 
 
 
-\newpage
 
-# References
-<add references here if relevant, otherwise delete this section> 
