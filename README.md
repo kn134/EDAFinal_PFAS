@@ -22,11 +22,20 @@ Point source pollution
 
 ## Database Information
 
-Raw data comes from North Carolina's Department of Environmental Quality (DEQ) in two datasets: (1) The 2018 Emerging Compounds Monitoring Reports of various watersheds and public water supply (PWS) reservoirs and (2) 2019 wastewater treatment plant (WWTP) samples, both accessed by Karly Nocera in 2020. Processed data was created by Karly Nocera and Tay Holliday in 2021, creating new fields to help in analysis.
+Raw data comes from North Carolina's Department of Environmental Quality (DEQ) in two datasets:
+1. The 2018 Emerging Compounds Monitoring Reports of various watersheds and public water supply (PWS) reservoirs
+2. 2019 wastewater treatment plant (WWTP) samples.
+
+Both datasets were first accessed by Karly Nocera in 2020. Processed data was created by Karly Nocera and Tay Holliday in 2021, creating new fields to help in analysis.
 
 ## Folder structure, file formats, and naming conventions 
 
-There are 3 main folders within the repository: Code, Data, and Output. The Data folder contains two sub-folders: Processed and Raw. Within the raw folder are csv files containing data obtained from the EPA and Waste Water Treatment Plants. Within the Processed folder are csv files that have been wrangled through the data wrangling code within the code folder. In the code folder there are 5 R markdown files: (1) A project template markdown file with which was the foundation to create the final project; (2) A wrangle markdown file which is R code that takes raw data from the raw data file and creates a much neater and easier to use processed data csv file; (3) An explore markdown file that explores the data in a visual and informative way; (4) An analysis file to answer visual analyses; and (5) a final markdown file combining the codes for submission.
+There are 3 main folders within the repository: Code, Data, and Output. The Data folder contains two sub-folders: Processed and Raw. Within the raw folder are csv files containing data obtained from the EPA and Waste Water Treatment Plants. Within the Processed folder are csv files that have been wrangled through the data wrangling code within the code folder. In the code folder there are 5 R markdown files: 
+1. A project template markdown file with which was the foundation to create the final project;
+2. A wrangle markdown file which is R code that takes raw data from the raw data file and creates a much neater and easier to use processed data csv file;
+3. An explore markdown file that explores the data in a visual and informative way;
+4. An analysis file to answer visual analyses;
+4. A final markdown file combining the codes for submission.
 
 CSV files contain the data used in this repository. R Markdown files contain the R code with which the data is run through.
 
