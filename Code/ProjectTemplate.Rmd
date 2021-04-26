@@ -64,11 +64,6 @@ Describe how you wrangled your dataset in a format similar to a methods section 
 
 Add a table that summarizes your data structure (variables, units, ranges and/or central tendencies, data source if multiple are used, etc.). This table can be made in markdown text or inserted as a `kable` function in an R chunk. If the latter, do not include the code used to generate your table.
 
-Dataset Names | Information
---------------|-------------
-EPAair_O3_NC2018_raw|2018 EPA air samples of ozone levels in North Carolina
-
-
 
 \newpage
 
@@ -84,7 +79,9 @@ Scope: think about what information someone might want to know about the dataset
 
 # Analysis
 
-Insert visualizations and text describing your main analyses. Format your R chunks so that graphs are displayed but code and other output is not displayed. Instead, describe the results of any statistical tests in the main text (e.g., "Variable x was significantly different among y groups (ANOVA; df = 300, F = 5.55, p < 0.0001)"). Each paragraph, accompanied by one or more visualizations, should describe the major findings and how they relate to the question and hypotheses. Divide this section into subsections, one for each research question.
+Insert visualizations and text describing your main analyses. Format your R chunks so that graphs are displayed but code and other output is not displayed. Instead, describe the results of any statistical tests in the main text (e.g., "Variable x was significantly different among y groups (ANOVA; df = 300, F = 5.55, p < 0.0001)"). 
+
+Each paragraph, accompanied by one or more visualizations, should describe the major findings and how they relate to the question and hypotheses. Divide this section into subsections, one for each research question.
 
 Each figure should be accompanied by a caption, and each figure should be referenced within the text
 
