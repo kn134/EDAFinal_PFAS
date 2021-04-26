@@ -4,8 +4,8 @@ WWTP,Northeast.Brunswick.Regional,34.27175034,-78.0055035
 WWTP,Town.of.Burgaw.Collection.System,34.55726739,-77.92518487
 WWTP,East.Burlington.WWTP,36.09382721,-79.37771112
 WWTP,South.Burlington.WWTP,36.02454813,-79.36944141
-WWTP,Wilmington-James.A.Loughlin(Northside).WWTP,34.26246994,-77.92142112
-WWTP,Wilmington-M'Kean.Maffitt(Southside).WWTP,34.16600449,-77.94528851
+WWTP,Wilmington-James.A.Loughlin(Northside.WWTP,34.26246994,-77.92142112
+WWTP,Wilmington-M'Kean.Maffitt(Southside.WWTP,34.16600449,-77.94528851
 WWTP,Cary.Western.Wake.Regional.Water.Reclamation.Facility,35.67154993,-78.94119022
 WWTP,Cit.of.Clinton-Norman.H.Larkins.WWTP,35.00515516,-78.34442384
 WWTP,Columbus.County.WWTP,34.3289896,-78.67922923
@@ -69,3 +69,4 @@ Source,Stony Creek Res at Dam,35.77335,-79.66412
 Source,Third Fork Crk at NC 54 nr Durham,35.9187,-78.9548
 Source,Turner Reservoir at Lacy's Creek,35.77442,-79.4611
 Source,"University Lake at Dam nr Chapel Hill, NC",35.89647,-79.09322
+WWTP,City.of.Reidsville,36.3236797,-79.66750151
