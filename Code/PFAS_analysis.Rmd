@@ -81,16 +81,12 @@ PFAS_wide_clean <-
   
 # stacked histogram ppt vs site
 
-ggplot(df, aes(x = dose, y = len))+
-  geom_col(aes(fill = supp), width = 0.7)
-
-ggplot(PFAS_wide_clean, aes(x = Site, y = short.ppt))+
+ggplot(PFAS_WWTP_wide_clean, aes(x = Site, y = short.ppt))+
   geom_col(aes(fill = supp), width = 0.7)
 
 
-ggplot(subset(PFAS_wide_clean,Type %in% c("Source"))) +
-  geom_col(aes(x = Site, y = ppt), 
-              draw_quantiles = c(0.25, 0.5, 0.75)) +
+ggplot(PFAS_WWTP_clean) +
+  geom_col(aes(x = Site, y = ppt)) +
   scale_y_continuous(limits = c(0, 100))
 
 
@@ -109,7 +105,7 @@ PFAS_wide_clean %>%
 
 # plot analytes by site shows the only analytes worth knowing
 
-ggplot(subset(PFAS_long_clean, Type == "Source"), aes(fill=Analyte, y=ppt, x=Site)) +     geom_bar(position="stack", stat="identity") +
+ggplot(PFAS_WWTP_clean, aes(fill=Analyte, y=ppt, x=Site)) +     geom_bar(position="stack", stat="identity") +
     labs(fill = "Analyte") +
     theme(axis.text.x=element_blank(),
         axis.ticks.x=element_blank()) +
@@ -137,9 +133,19 @@ topsites <- topsites[with(topsites,order(-TotalPFAS)),]
 topsites <- topsites[1:8,]
 
 
+topsites_wwtp <-
+  PFAS_WWTP_wide_clean %>%
+  select(Site, TotalPFAS)
+
+topsites_wwtp <- topsites_wwtp[with(topsites_wwtp,order(-TotalPFAS)),]
+
+topsites_wwtp <- topsites_wwtp[1:20,]
+
+
+
 # facet wrap each site by x = analyte y = ppt
 
-ggplot(topsites, aes(x = Site, y = TotalPFAS)) + 
+ggplot(topsites_wwtp, aes(x = Site, y = TotalPFAS)) + 
   geom_bar(stat="identity") +
   facet_wrap(vars(Site), nrow = 5) +
   ylab("Total PFAS (ppt)") +
@@ -156,17 +162,16 @@ ggplot(topsites, aes(x = Site, y = TotalPFAS)) +
 #EPA_Processed_2018$Result <- subset(EPA_Processed_2018$Result, !is.na()) #converts the result into a numeric value instead of a factor
 
 source_analyte_above_30 <- 
-  PFAS_long_clean %>%
-  filter(Type == "Source") %>%
+  PFAS_Source_clean %>%
   filter(ppt > 30)
 
 source_analyte_above_70 <- 
-  PFAS_long_clean %>%
-  filter(Type == "Source") %>%
+  PFAS_Source_clean %>%
   filter(ppt > 70)
 
 unique(source_analyte_above_30$Site) #11 Sites above 30 
 unique(source_analyte_above_70$Site) #5 sites above 70
+
 
 #Plotting the sites with more than 30/70
 source_analyte_30_plot <- 
@@ -193,53 +198,7 @@ source_analyte_70_plot <-
   xlab("Sample Date")
 print(source_analyte_70_plot + ggtitle("Source sites with Analytes above 70 ppt"))
 
-
-
-
-#Any locations with Analyte above 30? 70?
-#To do this, a simple pipe should do to filter out which analytes/site are above the given value.
-#EPA_Processed_2018$Result <- subset(EPA_Processed_2018$Result, !is.na()) #converts the result into a numeric value instead of a factor
-
-source_analyte_above_30 <- 
-  PFAS_long_clean %>%
-  filter(Type == "Source") %>%
-  filter(ppt > 30)
-
-source_analyte_above_70 <- 
-  PFAS_long_clean %>%
-  filter(Type == "Source") %>%
-  filter(ppt > 70)
-
-unique(source_analyte_above_30$Site) #11 Sites above 30 
-unique(source_analyte_above_70$Site) #5 sites above 70
-
-
-
-pfoapfos.source <- 
-  ggplot(PFAS_wide_clean, aes(x = Site, y = sum_pfoa.pfos)) +
-  geom_hline(yintercept = 70, lty = 2) +
-  geom_point(alpha = 0.5, size = 1.5) +
-  ylim(0,150) +
-  ylab(expression("PPT")) +
-  theme(axis.text.x = element_blank())
-
-total.source <- 
-  ggplot(PFAS_wide_clean, aes(x = Site, y = sum_pfas)) +
-  geom_hline(yintercept = 20, lty = 2) +
-  geom_hline(yintercept = 70, lty = 2) +
-  geom_point(alpha = 0.5, size = 1.5) +
-  ylim(0,150) +
-  ylab(expression("PPT")) +
-  theme(axis.text.x = element_blank())
-
-print(pfoapfos.source)
-
-print(total.source)
-
 ```
-
-
-
 
 
 ### Question 1e: [Tay] Total PFAS over 130
@@ -247,76 +206,41 @@ print(total.source)
 ```{r}
 
 #Total PFAS over 130
+
+Total_PFAS_WWTP_Over130 <- 
+  PFAS_WWTP_wide_clean %>%
+  filter(TotalPFAS > 130)
+
 
 # sum of pfas for every source site at that date
 # filter for those over 130
 # unique for how many sites had total pfas over 130
 
 #Source by Site and Date with sum PFAS above 130
-Total_PFAS_Source_Over130 <- 
-  PFAS_long_clean[!is.na(PFAS_long_clean$ppt),] %>%
-  filter (Type == "Source") %>%
-  filter(Analyte == "PFBA"| Analyte == "PFBS" | Analyte == "PFDS" | Analyte == "PFDA" | Analyte == "PFDoA" | Analyte == "PFHpS" | Analyte == "PFHpA" | Analyte == "PFHxS" | Analyte == "PFHxA" | Analyte == "PFNS" | Analyte == "PFNA" | Analyte == "PFOSA" | Analyte == "N.EtFOSAA" | Analyte == "N.MeFOSAA" | Analyte == "PFPeS" | Analyte == "PFPeA" | Analyte == "PFTeA" | Analyte == "PFTriA" | Analyte == "PFUnA" | Analyte == "HFPO.DA" | Analyte == "PFOA" | Analyte == "PFOS") %>%
-  group_by(Site, Sample.Date)%>%
-  summarise(sum_pfas = sum(ppt))%>%
-  filter (sum_pfas > 130)
-
-unique(Total_PFAS_Source_Over130$Site)
-
+# Total_PFAS_Source_Over130 <- 
+#   PFAS_long_clean[!is.na(PFAS_long_clean$ppt),] %>%
+#   filter (Type == "Source") %>%
+#   filter(Analyte == "PFBA"| Analyte == "PFBS" | Analyte == "PFDS" | Analyte == "PFDA" | Analyte == "PFDoA" | Analyte == "PFHpS" | Analyte == "PFHpA" | Analyte == "PFHxS" | Analyte == "PFHxA" | Analyte == "PFNS" | Analyte == "PFNA" | Analyte == "PFOSA" | Analyte == "N.EtFOSAA" | Analyte == "N.MeFOSAA" | Analyte == "PFPeS" | Analyte == "PFPeA" | Analyte == "PFTeA" | Analyte == "PFTriA" | Analyte == "PFUnA" | Analyte == "HFPO.DA" | Analyte == "PFOA" | Analyte == "PFOS") %>%
+#   group_by(Site, Sample.Date)%>%
+#   summarise(sum_pfas = sum(ppt))%>%
+#   filter (sum_pfas > 130)
+# 
+# unique(Total_PFAS_Source_Over130$Site)
+# 
 #Plotting sites above 130
-source_total_pfas_130_plot <- 
-  ggplot(Total_PFAS_Source_Over130, aes(x = Sample.Date, y = sum_pfas, color = Site)) +
+source_total_pfas_130_plot <-
+  ggplot(Total_PFAS_WWTP_Over130, aes(x = Sample.Date, y = TotalPFAS, color = Site)) +
   geom_point(alpha = 0.7, size = 5)+
   theme(axis.text.x = element_text(angle = 45, hjust = 1))+
   theme(axis.text.x = element_text(size = 7))+
   geom_hline(yintercept = 130, lty = 2)+
   scale_y_continuous(breaks=c(130, 200, 400, 600, 800, 1200))+
-  theme(legend.position = "right", 
+  theme(legend.position = "right",
         legend.text = element_text(size = 5), legend.title = element_text(size = 12))+
   xlab("Sample Date")+
   ylab("Total PFAS (ppt)")
-print(source_total_pfas_130_plot + ggtitle("Source Sites with Total PFAS Above 130 ppt"))
 
-
-
-
-### Question 1e: [Tay] Total PFAS over 130
-
-```{r}
-
-#Total PFAS over 130
-
-# sum of pfas for every source site at that date
-# filter for those over 130
-# unique for how many sites had total pfas over 130
-
-Total_PFAS_Source_Over130 <- 
-  PFAS_wide_clean %>%
-  filter (Type == "Source") %>%
-  filter (sum_pfas > 130)
-
-## hey, Tay. Do this. Please :) 
-
-# rename without dashes
-
-rename(PFAS_wide_clean, petal_length = Petal.Length)
-
-PFAS_wide_clean <-
-  PFAS_wide_clean %>%
-  mutate(TotalPFAS = (PFBA + PFBS + PFDS + PFDA + PFDoA + PFHpS + PFHpA + PFHxS + PFHxA + PFNS + PFNA + PFOSA + N.EtFOSAA + N.MeFOSAA + PFPeS + PFPeA + PFTeA + PFTriA + PFUnA + HFPO.DA + PFOA + PFOS), na.rm=TRUE)
-
-PFAS_wide_sum <-
-  PFAS_wide_clean %>%
-  mutate(TotalPFAS = (PFBA + PFBS + PFDS + PFDA + PFDoA + PFHpS + PFHpA + PFHxS + PFHxA + PFNS + PFNA + PFOSA + N.EtFOSAA + N.MeFOSAA + PFPeS + PFPeA + PFTeA + PFTriA + PFUnA + HFPO.DA + PFOA + PFOS, na.rm=TRUE))
-
-PFAS_wide_sum <-
-  PFAS_wide_clean %>%
-  mutate(TotalPFAS = sum(PFBA:PFOS, na.rm=TRUE))
-
-PFAS_wide_sum
-
-#YAY! Got it!
-
+print(source_total_pfas_130_plot + ggtitle("WWTP Sites with Total PFAS Above 130 ppt"))
 
 ```
 
@@ -325,27 +249,49 @@ PFAS_wide_sum
 ### Question 2a: [Tay] Summary Stats: ND below 5; ND below 10; ND below 20 (distrubtion bell curve)
 
 ```{r}
-source_ND_under30 <-
-  PFAS_long_clean[!is.na(PFAS_long_clean$limit),] %>%
-  filter(Type == "Source") %>%
-  filter(limit < 30)
 
-source_ND_above30 <-
-  PFAS_long_clean[!is.na(PFAS_long_clean$limit),] %>%
-  filter(Type == "Source") %>%
-  filter(limit > 30)
+# How many samples had reporting limits above health advisory levels? 
+# maybe do >10 or by analyte
 
-summary(source_ND_under30)
-summary(source_ND_above30)
+source_ND_under5 <-
+  PFAS_Source_clean[!is.na(PFAS_Source_clean$lab.qual),] %>%
+  filter(lab.qual <= 5)
 
-ggplot(source_ND_under30)+
-  geom_histogram(aes(x=limit))+
-  xlab("ND under 30 ppt")+
+source_ND_under10 <-
+  PFAS_Source_clean[!is.na(PFAS_Source_clean$lab.qual),] %>%
+  filter(lab.qual <= 10)
+
+source_ND_under20 <-
+  PFAS_Source_clean[!is.na(PFAS_Source_clean$lab.qual),] %>%
+  filter(lab.qual <= 20)
+
+summary(source_ND_under5)
+summary(source_ND_under10)
+summary(source_ND_under20)
+
+ggplot(source_ND_under5)+
+  geom_histogram(aes(x=lab.qual))+
+  xlab("ND under 5 ppt")+
   ylab("# of Samples")
 
-ggplot(source_ND_above30)+
-  geom_histogram(aes(x=limit), binwidth = 0.4)+
-  xlab("ND above 30 ppt")+
+ggplot(source_ND_under10)+
+  geom_histogram(aes(x=lab.qual))+
+  xlab("ND under 10 ppt")+
+  ylab("# of Samples")
+
+ggplot(source_ND_under20)+
+  geom_histogram(aes(x=lab.qual))+
+  xlab("ND under 20 ppt")+
+  ylab("# of Samples")
+
+
+# histogram number of samples by all ND
+
+ggplot(PFAS_Source_clean) +
+  geom_histogram(aes(x=lab.qual))+
+  xlim(0,600) +
+  ylim(0,30) +
+  xlab("ND ppt")+
   ylab("# of Samples")
 ```
 
@@ -355,15 +301,23 @@ ggplot(source_ND_above30)+
 
 ```{r}
 
+# of all the ND, how many are under 5
+
+# how many total
+source_ND <-
+  PFAS_Source_clean[!is.na(PFAS_Source_clean$lab.qual),] %>%
+  filter(lab.qual > 0)
+
+# percentage under 5
+
+source_nd_percent = (dim(source_ND_under5)[1] / dim(source_ND)[1])*100
+source_nd_percent
+
+# percentage under 20
+source_nd_percent = (dim(source_ND_under20)[1] / dim(source_ND)[1])*100
+source_nd_percent
+
 ```
-
-
-### Question 2c: [Tay] ND: Variability of lab qualifiers (know the level is above/below U) - by analyte per Source
-
-```{r}
-
-```
-
 
 
 ## Question 3: WWTP Analytes
@@ -375,9 +329,8 @@ ggplot(source_ND_above30)+
 # tried facet wrap
 
 wwtp_pfoa.pfos.genx <-
-  PFAS_long_clean %>%
-  filter(Analyte %in% c("PFOA", "PFOS", "HFPO-DA")) %>%
-  filter(Type =="WWTP")
+  PFAS_WWTP_clean %>%
+  filter(Analyte %in% c("PFOA", "PFOS", "HFPO.DA"))
 
 # add month column
 wwtp_pfoa.pfos.genx$Sample.Date <-
@@ -514,29 +467,53 @@ print(wwtp_analyte_70_plot + ggtitle("WWTP sites with Analytes above 70 ppt"))
 ### Question 3f: [Tay] Total PFAS over 130
 
 ```{r}
-#WWTP by Site and Date with sum PFAS above 130
-Total_PFAS_WWTP_Over130 <- 
-  PFAS_long_clean[!is.na(PFAS_long_clean$ppt),] %>%
-  filter (Type == "WWTP") %>%
-  filter(Analyte == "PFBA"| Analyte == "PFBS" | Analyte == "PFDS" | Analyte == "PFDA" | Analyte == "PFDoA" | Analyte == "PFHpS" | Analyte == "PFHpA" | Analyte == "PFHxS" | Analyte == "PFHxA" | Analyte == "PFNS" | Analyte == "PFNA" | Analyte == "PFOSA" | Analyte == "N.EtFOSAA" | Analyte == "N.MeFOSAA" | Analyte == "PFPeS" | Analyte == "PFPeA" | Analyte == "PFTeA" | Analyte == "PFTriA" | Analyte == "PFUnA" | Analyte == "HFPO.DA" | Analyte == "PFOA" | Analyte == "PFOS") %>%
-  group_by(Site, Sample.Date)%>%
-  summarise(sum_pfas = sum(ppt))%>%
-  filter (sum_pfas > 130)
 
-unique(Total_PFAS_Source_Over130$Site)
+
+Total_PFAS_WWTP_Over130 <- 
+  PFAS_WWTP_wide_clean %>%
+  filter(TotalPFAS > 130)
+
+
+# #WWTP by Site and Date with sum PFAS above 130
+# Total_PFAS_WWTP_Over130 <- 
+#   PFAS_long_clean[!is.na(PFAS_long_clean$ppt),] %>%
+#   filter (Type == "WWTP") %>%
+#   filter(Analyte == "PFBA"| Analyte == "PFBS" | Analyte == "PFDS" | Analyte == "PFDA" | Analyte == "PFDoA" | Analyte == "PFHpS" | Analyte == "PFHpA" | Analyte == "PFHxS" | Analyte == "PFHxA" | Analyte == "PFNS" | Analyte == "PFNA" | Analyte == "PFOSA" | Analyte == "N.EtFOSAA" | Analyte == "N.MeFOSAA" | Analyte == "PFPeS" | Analyte == "PFPeA" | Analyte == "PFTeA" | Analyte == "PFTriA" | Analyte == "PFUnA" | Analyte == "HFPO.DA" | Analyte == "PFOA" | Analyte == "PFOS") %>%
+#   group_by(Site, Sample.Date)%>%
+#   summarise(sum_pfas = sum(ppt))%>%
+#   filter (sum_pfas > 130)
+# 
+# unique(Total_PFAS_Source_Over130$Site)
+# 
+#Plotting sites above 130
+# wwtp_total_pfas_130_plot <-
+#   ggplot(Total_PFAS_WWTP_Over130, aes(x = Sample.Date, y = sum_pfas, color = Site)) +
+#   geom_point(alpha = 0.7, size = 5)+
+#   theme(axis.text.x = element_text(angle = 45, hjust = 1))+
+#   theme(axis.text.x = element_text(size = 7))+
+#   geom_hline(yintercept = 130, lty = 2)+
+#   scale_y_continuous(breaks=c(130, 400, 600, 800, 1200, 1800, 2400))+
+#   theme(legend.position = "right",
+#         legend.text = element_text(size = 6), legend.title = element_text(size = 12))+
+#   xlab("Sample Date")+
+#   ylab("Total PFAS (ppt)")
+# print(wwtp_total_pfas_130_plot + ggtitle("WWTP Sites with Total PFAS Above 130 ppt"))
+
+
 
 #Plotting sites above 130
-wwtp_total_pfas_130_plot <- 
-  ggplot(Total_PFAS_WWTP_Over130, aes(x = Sample.Date, y = sum_pfas, color = Site)) +
+wwtp_total_pfas_130_plot <-
+  ggplot(Total_PFAS_WWTP_Over130, aes(x = Sample.Date, y = TotalPFAS, color = Site)) +
   geom_point(alpha = 0.7, size = 5)+
   theme(axis.text.x = element_text(angle = 45, hjust = 1))+
   theme(axis.text.x = element_text(size = 7))+
   geom_hline(yintercept = 130, lty = 2)+
   scale_y_continuous(breaks=c(130, 400, 600, 800, 1200, 1800, 2400))+
-  theme(legend.position = "right", 
+  theme(legend.position = "right",
         legend.text = element_text(size = 6), legend.title = element_text(size = 12))+
   xlab("Sample Date")+
   ylab("Total PFAS (ppt)")
+
 print(wwtp_total_pfas_130_plot + ggtitle("WWTP Sites with Total PFAS Above 130 ppt"))
 ```
 
@@ -550,43 +527,68 @@ print(wwtp_total_pfas_130_plot + ggtitle("WWTP Sites with Total PFAS Above 130 p
 
 ```{r}
 wwtp_ND_under5 <-
-  PFAS_long_clean[!is.na(PFAS_long_clean$limit),] %>%
-  filter(Type == "WWTP") %>%
-  filter(limit < 5)
+  PFAS_WWTP_clean[!is.na(PFAS_WWTP_clean$lab.qual),] %>%
+  filter(lab.qual < 5)
 
 wwtp_ND_under10 <-
-  PFAS_long_clean[!is.na(PFAS_long_clean$limit),] %>%
-  filter(Type == "WWTP") %>%
-  filter(limit < 10)
+  PFAS_WWTP_clean[!is.na(PFAS_WWTP_clean$lab.qual),] %>%
+  filter(lab.qual < 10)
 
 wwtp_ND_under20 <-
-  PFAS_long_clean[!is.na(PFAS_long_clean$limit),] %>%
-  filter(Type == "WWTP") %>%
-  filter(limit < 20)
+  PFAS_WWTP_clean[!is.na(PFAS_WWTP_clean$lab.qual),] %>%
+  filter(lab.qual < 20)
 
 summary(wwtp_ND_under5)
 summary(wwtp_ND_under10)
 summary(wwtp_ND_under20)
 
 ggplot(wwtp_ND_under5)+
-  geom_histogram(aes(x=limit))+
+  geom_histogram(aes(x=lab.qual))+
   xlab("ND under 5 ppt")+
   ylab("# of Samples")
 
 ggplot(wwtp_ND_under10)+
-  geom_histogram(aes(x=limit))+
+  geom_histogram(aes(x=lab.qual))+
   xlab("ND under 10 ppt")+
   ylab("# of Samples")
 
 ggplot(wwtp_ND_under20)+
-  geom_histogram(aes(x=limit))+
+  geom_histogram(aes(x=lab.qual))+
   xlab("ND under 20 ppt")+
   ylab("# of Samples")
+
+
+# histogram number of samples by all ND
+
+ggplot(PFAS_WWTP_clean) +
+  geom_histogram(aes(x=lab.qual))+
+  xlim(0,600) +
+  ylim(0,30) +
+  xlab("ND ppt")+
+  ylab("# of Samples")
+
 ```
 
 ### Question 4b: [Tay] Percentages (how many ND / total detections under 30) within any. Within GenX. See how many of which analytes have the worst percentage rations --> play with those trends
 
 ```{r}
+
+# of all the ND, how many are under 5
+
+# how many are under 5
+dim(wwtp_ND_under5) #855
+
+# how many total
+wwtp_ND <-
+  PFAS_WWTP_clean[!is.na(PFAS_WWTP_clean$lab.qual),] %>%
+  filter(lab.qual > 0)
+
+dim(wwtp_ND) #1259
+
+# percentage
+
+wwtp_nd_percent = (dim(wwtp_ND_under5)[1] / dim(wwtp_ND)[1])*100
+wwtp_nd_percent
 
 ```
 
@@ -609,9 +611,10 @@ PFAS_WWTP_wide_clean$Sample.Date <- ymd(PFAS_WWTP_wide_clean$Sample.Date)
 ggplot(PFAS_WWTP_wide_clean, aes(x=Sample.Date, y = TotalPFAS, group=Site)) +
   geom_line(aes(color=Site)) +
   geom_point(aes(color=Site)) +
+  ylim(0,600) +
   scale_x_date(date_breaks = "1 month", date_labels = "%b %y")
 
-# or
+# or by month column 
 
 PFAS_WWTP_wide_clean <-
   PFAS_WWTP_wide_clean %>%
@@ -656,12 +659,6 @@ ggplot(subset(PFAS_Source_clean, !is.na(ppt)), aes(fill=Analyte, x=Site, y=ppt))
 
 ```
 
-# Analytes over date and ppt
-
-```{r}
-
-```
-
 # Compare PFOA/PFOS and Total (stacked bar)
 
 ```{r}
@@ -669,8 +666,6 @@ ggplot(subset(PFAS_Source_clean, !is.na(ppt)), aes(fill=Analyte, x=Site, y=ppt))
 PFAS_WWTP_wide_clean <-
   PFAS_WWTP_wide_clean %>%
   mutate(nonPFOA.PFOS = (TotalPFAS-SumPFOA.PFOS))
-
-6.2
 
 WWTP_sum.total <-
   PFAS_WWTP_clean %>%

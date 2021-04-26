@@ -32,16 +32,7 @@ PFAS_WWTP <- read.csv("../Data/Raw/2019_WWTP_orginal_asdataset.csv", stringsAsFa
 
 PFAS_Source <- read.csv("../Data/Raw/2018_PublicSupply_original.csv", stringsAsFactors = TRUE)
 
-chainlength <- read.csv("../Data/Raw/chainlength.csv", stringsAsFactors = TRUE)
-
 latlong <- read.csv("../Data/Raw/Locations_latlong.csv", stringsAsFactors = TRUE)
-
-
-# PFAS_wwtp_wide_july <- read.csv("../Data/Processed/2019_WWTP_July.csv", stringsAsFactors = TRUE)
-# PFAS_wwtp_wide_aug <- read.csv("../Data/Processed/2019_WWTP_Aug.csv", stringsAsFactors = TRUE)
-# PFAS_wwtp_wide_sep <- read.csv("../Data/Processed/2019_WWTP_Sept.csv", stringsAsFactors = TRUE)
-# 
-# PFAS_source_wide <- read.csv("../Data/Processed/2018_PublicSupply_wide_latlong.csv", stringsAsFactors = TRUE)
 
 ```
 
@@ -143,7 +134,12 @@ PFAS_Source <-
   left_join(PFAS_Source, latlong) %>%
   select(Site:chain.length,lat,long)
 
+#wide
+PFAS_WWTP_wide <-
+  left_join(PFAS_WWTP_wide, latlong)
+
 ```
+
 ```{r}
 
 PFAS_WWTP_wide <- as.data.frame(PFAS_WWTP_wide)
@@ -153,7 +149,6 @@ PFAS_Source_wide <- as.data.frame(PFAS_Source_wide)
 PFAS_Source_wide = data.frame(lapply(PFAS_Source_wide, as.character), stringsAsFactors=FALSE)
 
 ```
-
 
 # save processed files
 
@@ -170,6 +165,36 @@ write.csv(PFAS_WWTP_wide, row.names=FALSE, file = "./Data/Processed/PFAS_WWTP_wi
 write.csv(PFAS_Source, row.names=FALSE, file = "./Data/Processed/PFAS_Source_clean.csv")
 
 write.csv(PFAS_Source_wide, row.names=FALSE, file = "./Data/Processed/PFAS_Source_wide_clean.csv")
+
+```
+
+```{r}
+
+# read in Cleaned PFAS so it has string as factors
+
+PFAS_Source_wide_clean <- read.csv("./Data/Processed/PFAS_Source_wide_clean.csv", stringsAsFactors = TRUE)
+
+PFAS_Source_wide_clean <- read.csv("./Data/Processed/PFAS_Source_wide_clean.csv")
+
+PFAS_Source_wide_clean <- as.numeric(PFAS_Source_wide_clean, PFOS, PFUnA, NMeFOSAA, PFDS, PFNA, PFDoA, PFDA, PFTriA, PFNS, PFBA, PFHxA, PFPeA, FOSA, HFPO.DA, PFBS, PFHpA, PFHpS, PFHxS, PFOA, PFPeS, 6.2, 8.2, 4.2) 
+
+# drop FallsLake@MouthLedgeCreeknearCreedmoorNC
+
+PFAS_Source_wide_clean <- filter(PFAS_Source_wide_clean, Site !="FallsLake@MouthLedgeCreeknearCreedmoorNC")
+
+# replace c(NA, NA) with 0
+
+PFAS_Source_wide_clean$PFPeA[PFAS_Source_wide_clean$PFPeA=="c(NA, NA)"] <- 0
+
+# mutate wide
+
+PFAS_Source_wide_clean <- 
+  PFAS_Source_wide_clean %>%
+  rowwise() %>%
+  mutate(TotalPFAS = sum(6.2, 8.2, 4.2, PFUnA, NMeFOSAA, PFDS, PFNA, PFDoA, PFDA, PFTriA, PFNS, PFBA, PFHxA, PFPeA, PFOS, FOSA, HFPO.DA, PFBS, PFHpA, PFHpS, PFHxS, PFOA, PFPeS, na.rm=TRUE)) %>%
+  mutate(SumPFOA.PFOS = sum(PFOA, PFOS, na.rm=TRUE)) %>%
+  mutate(short.ppt = sum(6.2, 4.2, PFBA, PFHxA, PFPeA, PFBS, PFHpA, PFPeS, na.rm = TRUE)) %>%
+  mutate(long.ppt = sum(8.2, PFUnA, NMeFOSAA, PFDS, PFNA, PFDoA, PFDA, PFTriA, PFNS, PFOS, FOSA, HFPO.DA, PFHpS, PFHxS, PFOA, na.rm = TRUE))
 
 ```
 

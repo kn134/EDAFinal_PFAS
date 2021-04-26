@@ -25,6 +25,11 @@ library(dplyr)
 library(formattable)
 library(tidyr)
 
+library(sf)
+library(leaflet)
+library(mapview)
+library(RColorBrewer)
+
 
 # Set your ggplot theme
 
@@ -118,16 +123,9 @@ formattable(source_reporting)
 
 # visualize count data for categorical variables (how many samples of each analyte)
 
-# NEED TO CLEAN SO CAN SEE ALL LABLES (maybe tilt)
-
 ggplot(PFAS_WWTP_clean, aes(x = Analyte)) +
-  geom_bar()
-
-# how many samples of analytes
-
-ggplot(PFAS_WWTP_clean, aes(x = Analyte)) +
-  geom_bar(data = PFAS_WWTP_clean %>% filter(ppt != "NA")) +
-  labs(x = "Analyte", y = "Number of Samples")
+  geom_bar(data = PFAS_WWTP_clean %>% filter(ppt != "NA")) +    labs(x = "Analyte", y = "Number of Samples") +
+  theme(axis.text.x = element_text(angle = 90,  hjust = 1))
 
 ```
 
@@ -144,7 +142,8 @@ ggplot(PFAS_WWTP_clean) +
 ggplot(PFAS_WWTP_clean, aes(x = ppt)) +
   geom_histogram(binwidth = 50) + 
   scale_x_continuous(limits = c(0, 250)) +
-  labs(x = "Analyte", y = "Number of Samples")
+  ylim(0,80) +
+  labs(x = "Value (ppt)", y = "Number of Samples")
   
 ```
 
@@ -163,7 +162,12 @@ ggplot(subset(PFAS_WWTP_clean, Analyte %in% c("PFOA", "PFOS", "PFBA", "PFHxA", "
   ggtitle("Number of Analyte Samples by Level at WWTP")
 
 ### Source 
-♣
+
+ggplot(subset(PFAS_Source_clean, Analyte %in% c("PFOA", "PFOS", "PFBA", "PFHxA", "PFNA", "PFBS", "6.2", "PFHpA", "PFPeA"))) +
+  geom_freqpoly(aes(x = ppt, color = Analyte), bins = 50) +
+  scale_x_continuous(limits = c(0, 400)) +
+  theme(legend.position = "top") +
+  labs(x = "Value (ppt)", y = "Count")
 
 
 
@@ -173,7 +177,13 @@ library(ggridges)
 
 ggplot(subset(PFAS_WWTP_clean, Analyte %in% c("PFOA", "PFOS", "PFBA", "PFHxA", "PFNA", "PFBS", "6.2", "PFHpA", "PFPeA")), aes(y = Analyte, x = ppt)) +
   geom_density_ridges(aes(fill = Site), alpha = 0.5) +
-  xlim(0,1010)
+  xlim(0,1010) +
+  theme(legend.position = "right")
+
+ggplot(subset(PFAS_Source_clean, Analyte %in% c("PFOA", "PFOS", "PFBA", "PFHxA", "PFNA", "PFBS", "6.2", "PFHpA", "PFPeA")), aes(y = Analyte, x = ppt)) +
+  geom_density_ridges(aes(fill = Site), alpha = 0.5) +
+  xlim(0,400) +
+  theme(legend.position = "right")
 
 ```
 
@@ -195,24 +205,34 @@ An alternate option is a violin plot, which displays density distributions, some
 
 ## DOES NOT LOOK GOOD -- HOW TO FIX? MAYBE FACET WRAP BY ANALYTE?
 
-ggplot(PFAS_long_clean) +
+ggplot(PFAS_WWTP_clean) +
   geom_violin(aes(x = Analyte, y = ppt), 
               draw_quantiles = c(0.25, 0.5, 0.75)) +
   scale_y_continuous(limits = c(0, 100)) 
 
 # picking top analytes
 
-ggplot(subset(PFAS_long_clean,Analyte %in% c("PFOA", "PFOS"))) +
+ggplot(subset(PFAS_WWTP_clean,Analyte %in% c("PFOA", "PFOS"))) +
   geom_violin(aes(x = Analyte, y = ppt), 
               draw_quantiles = c(0.25, 0.5, 0.75)) +
   scale_y_continuous(limits = c(0, 100))
+
+
+library(scales)
+
+ggplot(subset(PFAS_Source_clean,Analyte %in% c("PFOA", "PFOS"))) +
+  geom_violin(aes(x = Analyte, y = ppt), 
+              draw_quantiles = c(0.25, 0.5, 0.75)) +
+  scale_y_continuous(breaks= pretty_breaks())
+
 
 
 # by WWTP sites -- PICK TOP or !! FACET WRAP !! 
 ggplot(subset(PFAS_long_clean,Type %in% c("WWTP"))) +
   geom_violin(aes(x = Site, y = ppt), 
               draw_quantiles = c(0.25, 0.5, 0.75)) +
-  scale_y_continuous(limits = c(0, 100))
+  scale_y_continuous(limits = c(0, 100)) +
+  
 
 ```
 
@@ -221,17 +241,44 @@ ggplot(subset(PFAS_long_clean,Type %in% c("WWTP"))) +
 
 ```{r}
 
-library(sf)
-library(leaflet)
-library(mapview)
-library(RColorBrewer)
+PFAS_WWTP_wide_sf <-
+  left_join(PFAS_WWTP_wide_clean, latlong)
 
-pfas_sf <- 
-  PFAS_wide_clean %>% 
+PFAS_WWTP_wide_sf <-
+  PFAS_WWTP_wide_sf %>%
+  select(lat, long, Site:Type)
+
+PFAS_WWTP_wide_sf <- 
+  PFAS_WWTP_wide_sf %>% 
   group_by(Site, lat, long, TotalPFAS) %>% 
   st_as_sf(coords = c('long','lat'), crs=4269)
 
-mapview(pfas_sf)
+mapview(PFAS_WWTP_wide_sf)
+
+#source
+PFAS_Source_wide_sf <-
+  left_join(PFAS_Source_wide_clean, latlong)
+
+PFAS_Source_wide_sf <-
+  PFAS_Source_wide_sf %>%
+  select(lat, long, Site:Type)
+
+PFAS_Source_wide_sf <- 
+  PFAS_Source_wide_sf %>% 
+  group_by(Site, lat, long) %>% 
+  st_as_sf(coords = c('long','lat'), crs=4269)
+
+
+
+
+#map both points
+mapview(PFAS_WWTP_wide_sf, 
+        col.regions='red',
+        alpha.regions=1,
+        legend=FALSE) +
+  mapview(grainger_sfc, 
+          col.regions='darkblue', 
+          alpha.regions=1)
 ```
 
 
