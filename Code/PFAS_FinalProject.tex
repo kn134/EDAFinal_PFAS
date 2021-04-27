@@ -45,46 +45,6 @@
   pdfcreator={LaTeX via pandoc}}
 \urlstyle{same} % disable monospaced font for URLs
 \usepackage[margin=2.54cm]{geometry}
-\usepackage{color}
-\usepackage{fancyvrb}
-\newcommand{\VerbBar}{|}
-\newcommand{\VERB}{\Verb[commandchars=\\\{\}]}
-\DefineVerbatimEnvironment{Highlighting}{Verbatim}{commandchars=\\\{\}}
-% Add ',fontsize=\small' for more characters per line
-\usepackage{framed}
-\definecolor{shadecolor}{RGB}{248,248,248}
-\newenvironment{Shaded}{\begin{snugshade}}{\end{snugshade}}
-\newcommand{\AlertTok}[1]{\textcolor[rgb]{0.94,0.16,0.16}{#1}}
-\newcommand{\AnnotationTok}[1]{\textcolor[rgb]{0.56,0.35,0.01}{\textbf{\textit{#1}}}}
-\newcommand{\AttributeTok}[1]{\textcolor[rgb]{0.77,0.63,0.00}{#1}}
-\newcommand{\BaseNTok}[1]{\textcolor[rgb]{0.00,0.00,0.81}{#1}}
-\newcommand{\BuiltInTok}[1]{#1}
-\newcommand{\CharTok}[1]{\textcolor[rgb]{0.31,0.60,0.02}{#1}}
-\newcommand{\CommentTok}[1]{\textcolor[rgb]{0.56,0.35,0.01}{\textit{#1}}}
-\newcommand{\CommentVarTok}[1]{\textcolor[rgb]{0.56,0.35,0.01}{\textbf{\textit{#1}}}}
-\newcommand{\ConstantTok}[1]{\textcolor[rgb]{0.00,0.00,0.00}{#1}}
-\newcommand{\ControlFlowTok}[1]{\textcolor[rgb]{0.13,0.29,0.53}{\textbf{#1}}}
-\newcommand{\DataTypeTok}[1]{\textcolor[rgb]{0.13,0.29,0.53}{#1}}
-\newcommand{\DecValTok}[1]{\textcolor[rgb]{0.00,0.00,0.81}{#1}}
-\newcommand{\DocumentationTok}[1]{\textcolor[rgb]{0.56,0.35,0.01}{\textbf{\textit{#1}}}}
-\newcommand{\ErrorTok}[1]{\textcolor[rgb]{0.64,0.00,0.00}{\textbf{#1}}}
-\newcommand{\ExtensionTok}[1]{#1}
-\newcommand{\FloatTok}[1]{\textcolor[rgb]{0.00,0.00,0.81}{#1}}
-\newcommand{\FunctionTok}[1]{\textcolor[rgb]{0.00,0.00,0.00}{#1}}
-\newcommand{\ImportTok}[1]{#1}
-\newcommand{\InformationTok}[1]{\textcolor[rgb]{0.56,0.35,0.01}{\textbf{\textit{#1}}}}
-\newcommand{\KeywordTok}[1]{\textcolor[rgb]{0.13,0.29,0.53}{\textbf{#1}}}
-\newcommand{\NormalTok}[1]{#1}
-\newcommand{\OperatorTok}[1]{\textcolor[rgb]{0.81,0.36,0.00}{\textbf{#1}}}
-\newcommand{\OtherTok}[1]{\textcolor[rgb]{0.56,0.35,0.01}{#1}}
-\newcommand{\PreprocessorTok}[1]{\textcolor[rgb]{0.56,0.35,0.01}{\textit{#1}}}
-\newcommand{\RegionMarkerTok}[1]{#1}
-\newcommand{\SpecialCharTok}[1]{\textcolor[rgb]{0.00,0.00,0.00}{#1}}
-\newcommand{\SpecialStringTok}[1]{\textcolor[rgb]{0.31,0.60,0.02}{#1}}
-\newcommand{\StringTok}[1]{\textcolor[rgb]{0.31,0.60,0.02}{#1}}
-\newcommand{\VariableTok}[1]{\textcolor[rgb]{0.00,0.00,0.00}{#1}}
-\newcommand{\VerbatimStringTok}[1]{\textcolor[rgb]{0.31,0.60,0.02}{#1}}
-\newcommand{\WarningTok}[1]{\textcolor[rgb]{0.56,0.35,0.01}{\textbf{\textit{#1}}}}
 \usepackage{longtable,booktabs}
 \usepackage{calc} % for calculating minipage widths
 % Correct order of tables after \paragraph or \subparagraph
@@ -137,33 +97,6 @@
 \newpage
 \listoffigures 
 \newpage
-
-\begin{Shaded}
-\begin{Highlighting}[]
-\CommentTok{\#sets the default values of chunk options}
-\NormalTok{knitr}\SpecialCharTok{::}\NormalTok{opts\_chunk}\SpecialCharTok{$}\FunctionTok{set}\NormalTok{(}\AttributeTok{echo =} \ConstantTok{FALSE}\NormalTok{, }\AttributeTok{fig.width =} \DecValTok{10}\NormalTok{, }\AttributeTok{fig.height =} \DecValTok{10}\NormalTok{)}
-\end{Highlighting}
-\end{Shaded}
-
-\begin{itemize}
-\tightlist
-\item
-  Knitting commands in code chunks:
-\item
-  \texttt{include\ =\ FALSE} - code is run, but neither code nor results
-  appear in knitted file
-\item
-  \texttt{echo\ =\ FALSE} - code not included in knitted file, but
-  results are
-\item
-  \texttt{eval\ =\ FALSE} - code is not run in the knitted file
-\item
-  \texttt{message\ =\ FALSE} - messages do not appear in knitted file
-\item
-  \texttt{warning\ =\ FALSE} - warnings do not appear\ldots{}
-\item
-  \texttt{fig.cap\ =\ "..."} - adds a caption to graphical results
-\end{itemize}
 
 \hypertarget{rationale-and-research-questions}{%
 \section{Rationale and Research
@@ -433,28 +366,12 @@ The abundnace indicates which PFAS are most commonly present and which
 analytes have a high count at higher levels (ppt). This is relevant for
 regulation and possibly tracking contaminant sources.
 
-\begin{verbatim}
-## Warning: Removed 237 rows containing non-finite values (stat_bin).
-\end{verbatim}
-
-\begin{verbatim}
-## Warning: Removed 18 row(s) containing missing values (geom_path).
-\end{verbatim}
-
 \begin{figure}
 
 \includegraphics{PFAS_FinalProject_files/figure-latex/unnamed-chunk-4-1} \hfill{}
 
 \caption{Number of Samples by Level in POTW}\label{fig:unnamed-chunk-4}
 \end{figure}
-
-\begin{verbatim}
-## Warning: Removed 1209 rows containing non-finite values (stat_bin).
-\end{verbatim}
-
-\begin{verbatim}
-## Warning: Removed 12 row(s) containing missing values (geom_path).
-\end{verbatim}
 
 \begin{figure}
 
@@ -472,28 +389,12 @@ which analytes have frequently high values. This is valuable knowledge
 to begin analyzing whether high levels are an isolated event or
 consistently high.
 
-\begin{verbatim}
-## Picking joint bandwidth of 9.19
-\end{verbatim}
-
-\begin{verbatim}
-## Warning: Removed 226 rows containing non-finite values (stat_density_ridges).
-\end{verbatim}
-
 \begin{figure}
 
 \includegraphics{PFAS_FinalProject_files/figure-latex/unnamed-chunk-6-1} \hfill{}
 
 \caption{Density Ridges of Select Analytes by Level in POTW}\label{fig:unnamed-chunk-6}
 \end{figure}
-
-\begin{verbatim}
-## Picking joint bandwidth of 17.5
-\end{verbatim}
-
-\begin{verbatim}
-## Warning: Removed 1209 rows containing non-finite values (stat_density_ridges).
-\end{verbatim}
 
 \begin{figure}
 
@@ -511,30 +412,12 @@ sample site types indicate the quartiles of both analytes. This is
 important for understanding the PFAS levels where the bulk of samples
 occured.
 
-\begin{verbatim}
-## Warning: Removed 17 rows containing non-finite values (stat_ydensity).
-\end{verbatim}
-
-\begin{verbatim}
-## Warning in regularize.values(x, y, ties, missing(ties), na.rm = na.rm):
-## collapsing to unique 'x' values
-\end{verbatim}
-
 \begin{figure}
 
 \includegraphics{PFAS_FinalProject_files/figure-latex/unnamed-chunk-8-1} \hfill{}
 
 \caption{Violin Plots of PFOA and PFOS in POTW}\label{fig:unnamed-chunk-8}
 \end{figure}
-
-\begin{verbatim}
-## Warning: Removed 268 rows containing non-finite values (stat_ydensity).
-\end{verbatim}
-
-\begin{verbatim}
-## Warning in regularize.values(x, y, ties, missing(ties), na.rm = na.rm):
-## collapsing to unique 'x' values
-\end{verbatim}
 
 \begin{figure}
 
@@ -687,10 +570,6 @@ PFPeS & 42\tabularnewline
 \hypertarget{analysis}{%
 \section{Analysis}\label{analysis}}
 
-Each paragraph, accompanied by one or more visualizations, should
-describe the major findings and how they relate to the question and
-hypotheses.
-
 \hypertarget{question-1-occurence}{%
 \subsection{Question 1: Occurence}\label{question-1-occurence}}
 
@@ -698,11 +577,15 @@ hypotheses.
 \subsubsection{What are the most abundant analytes
 present?}\label{what-are-the-most-abundant-analytes-present}}
 
-FILL IN
-
-\begin{verbatim}
-## Warning: Removed 1303 rows containing missing values (position_stack).
-\end{verbatim}
+The following two plots indicate the analytes present in POTW and PWS
+samples. First, the finding indicates that a wider variety of analytes
+were found in POTW compared to PWS, which may indicate additional or
+different contamination sources. It may also be an indicator of varioius
+PFAS precursors and or their degraded forms, which further research can
+focus on identifying patterns influencing those changes. Lastly, these
+graphs are the first clue that PFOA, PFOS, and GenX (the most commonly
+discussed, researched, and regulated analytes) may not be the most
+abundant PFAS we are exposed to via water.
 
 \begin{figure}
 
@@ -710,10 +593,6 @@ FILL IN
 
 \caption{Analytes Present in POTW Sites}\label{fig:unnamed-chunk-13}
 \end{figure}
-
-\begin{verbatim}
-## Warning: Removed 3166 rows containing missing values (position_stack).
-\end{verbatim}
 
 \begin{figure}
 
@@ -726,7 +605,21 @@ FILL IN
 \subsubsection{Which sites have analytes exceeding health advisory
 levels?}\label{which-sites-have-analytes-exceeding-health-advisory-levels}}
 
-FILL IN
+Using the unique function allows a closer look at the number of sites
+with analytes above 30ppt and 70ppt (common health advisory or
+regulatory limits for PFOA and PFOS). In the POTW samples, there were 23
+sites with analytes above 30ppt and 13 above 70ppt. In PWS samples, 11
+sites were above 30ppt and 5 above 70ppt. Rather than comparing the two,
+these numbers indicate that a signficant number of sites had analytes at
+what could potentially be a concerning level, and further research is
+needed to determine if those specific analytes exceeding 30ppt and 70ppt
+pose a health risk. Certainly, they indicate the widespread presence of
+high levels of PFAS in North Carolina.
+
+The following plots elaborate on this data, indicating which sites
+showed those respective levels. This information can be used to target
+subsequent sampling, depending on if the particular analytes pose a
+health risk to the communities nearby.
 
 \begin{verbatim}
 ##  [1] City.of.Randleman                                
@@ -798,107 +691,127 @@ FILL IN
 
 \begin{figure}
 
+\includegraphics{PFAS_FinalProject_files/figure-latex/unnamed-chunk-16-1} \hfill{}
+
+\caption{POTW Sites with Analytes Over 30ppt}\label{fig:unnamed-chunk-16}
+\end{figure}
+
+\begin{figure}
+
 \includegraphics{PFAS_FinalProject_files/figure-latex/unnamed-chunk-17-1} \hfill{}
 
-\caption{POTW Sites with Analytes Over 30ppt}\label{fig:unnamed-chunk-17}
+\caption{POTW Sites with Analytes Over 70ppt}\label{fig:unnamed-chunk-17}
 \end{figure}
 
 \begin{figure}
 
 \includegraphics{PFAS_FinalProject_files/figure-latex/unnamed-chunk-18-1} \hfill{}
 
-\caption{POTW Sites with Analytes Over 70ppt}\label{fig:unnamed-chunk-18}
+\caption{PWS Sites with Analytes Over 30ppt}\label{fig:unnamed-chunk-18}
 \end{figure}
 
 \begin{figure}
 
 \includegraphics{PFAS_FinalProject_files/figure-latex/unnamed-chunk-19-1} \hfill{}
 
-\caption{PWS Sites with Analytes Over 30ppt}\label{fig:unnamed-chunk-19}
-\end{figure}
-
-\begin{figure}
-
-\includegraphics{PFAS_FinalProject_files/figure-latex/unnamed-chunk-20-1} \hfill{}
-
-\caption{PWS Sites with Analytes Over 70ppt}\label{fig:unnamed-chunk-20}
+\caption{PWS Sites with Analytes Over 70ppt}\label{fig:unnamed-chunk-19}
 \end{figure}
 
 \hypertarget{what-chain-lengths-are-most-abundant-and-present}{%
 \subsubsection{What chain lengths are most abundant and
 present?}\label{what-chain-lengths-are-most-abundant-and-present}}
 
-FILL IN
+PFAS have characteristically strong carbon bonds, and depending on their
+chain length, are categorized as either short- or long-chained PFAS.
+Long-chain PFAS are most researched (e.g., PFOA, PFOS) and take a long
+time to degrade. Furthermore, certain remediation treatments (such as
+the common and most affordable granular activated carbon (GAC)) are only
+effective at removing long-chain PFAS.
+
+The following graphs indicate the proportion of total PFAS by chain
+length. This information should inform remediation and treatment
+upgrades as well as be interpolated to identify risks (for example,
+sites with predominantly short-chained PFAS but with GAC treatment may
+falsely assume it is adequately treating the risk to its community).
+
+\begin{figure}
+
+\includegraphics{PFAS_FinalProject_files/figure-latex/unnamed-chunk-20-1} \hfill{}
+
+\caption{Total PFAS by Chain Length in POTW}\label{fig:unnamed-chunk-20}
+\end{figure}
 
 \begin{figure}
 
 \includegraphics{PFAS_FinalProject_files/figure-latex/unnamed-chunk-21-1} \hfill{}
 
-\caption{Total PFAS by Chain Length in POTW}\label{fig:unnamed-chunk-21}
-\end{figure}
-
-\begin{figure}
-
-\includegraphics{PFAS_FinalProject_files/figure-latex/unnamed-chunk-22-1} \hfill{}
-
-\caption{Total PFAS by Chain Length in PWS}\label{fig:unnamed-chunk-22}
+\caption{Total PFAS by Chain Length in PWS}\label{fig:unnamed-chunk-21}
 \end{figure}
 
 \hypertarget{what-portion-of-total-pfas-are-pfoa-and-pfos}{%
 \subsubsection{What portion of total PFAS are PFOA and
 PFOS?}\label{what-portion-of-total-pfas-are-pfoa-and-pfos}}
 
-FILL IN
-
-\begin{verbatim}
-## Warning: Removed 210 rows containing missing values (geom_bar).
-\end{verbatim}
+This graph of POTW sites further illustrate the concern that the public
+is over-focused on PFOA and PFOS and is overlooking potential dangers
+from high total PFAS. Specifically, sites such as Sanford-Big Buffalo
+Creek get a lot of public attention because it had a high level of
+PFOA/PFOS but sites like the Town of Ramsur, Rose Hill, and Wallace
+Regional WWTPs had total PFAS above 250ppt and are infrequently
+mentioned.
 
 \begin{figure}
 
-\includegraphics{PFAS_FinalProject_files/figure-latex/unnamed-chunk-23-1} \hfill{}
+\includegraphics{PFAS_FinalProject_files/figure-latex/unnamed-chunk-22-1} \hfill{}
 
-\caption{Proportion of PFOA and PFOS in Total PFAS at POTW Sites}\label{fig:unnamed-chunk-23}
+\caption{Proportion of PFOA and PFOS in Total PFAS at POTW Sites}\label{fig:unnamed-chunk-22}
 \end{figure}
 
 \hypertarget{question-2-distribution}{%
 \subsection{Question 2: Distribution}\label{question-2-distribution}}
 
-\hypertarget{are-there-bodies-of-drinking-water-sources-with-concerningly-high-levels-of-pfas-that-arent-commonly-discussed}{%
-\subsubsection{Are there bodies of drinking water sources with
-concerningly high levels of PFAS that aren't commonly
-discussed?}\label{are-there-bodies-of-drinking-water-sources-with-concerningly-high-levels-of-pfas-that-arent-commonly-discussed}}
+\hypertarget{are-there-bodies-of-water-with-concerningly-high-levels-of-pfas-that-arent-commonly-discussed}{%
+\subsubsection{Are there bodies of water with concerningly high levels
+of PFAS that aren't commonly
+discussed?}\label{are-there-bodies-of-water-with-concerningly-high-levels-of-pfas-that-arent-commonly-discussed}}
 
-FILL IN
+Expanding upon Question 1, graphing the top 12 highest total PFAS sites
+is the first step for researchers and regulators to focus further
+investigatory sampling. As mentioned before, in addition to the commonly
+publicized Burlington and Sandford-Big Buffalo Creek WWTPs, the Town of
+Ramseur, City of Mebane, Wallace Regional City of Raeford, Greensboro,
+Wilmington (North and Southside), North Harnett Regional, and City of
+Durham/South Durham Water Reclamation sites have surprisingly high total
+PFAS.
 
-NEED TO BE ABLE TO SUM SOURCE DATASET
+\includegraphics{PFAS_FinalProject_files/figure-latex/unnamed-chunk-23-1.pdf}
 
 \hypertarget{how-does-total-pfas-change-over-time}{%
 \subsubsection{How does total PFAS change over
 time?}\label{how-does-total-pfas-change-over-time}}
 
-FILL IN
+Only the POTW dataset provided enough data for a temporal analysis, but
+it is ill-advised to make broad conclusions based on a three-month
+testing period. The first graph seems to indicate that, although there
+are isolated spikes, total PFAS remained consistently high and possibly
+increasing. A closer look (second graph removing outlier) illustrates
+that there was a definitive spike across multiple sites in August.
+Further research and more extensive sampling is needed to identify
+whether this is a temporal/seasonal trend, or if there were
+source-specific variables that impacted these levels.
+
+\begin{figure}
+
+\includegraphics{PFAS_FinalProject_files/figure-latex/unnamed-chunk-24-1} \hfill{}
+
+\caption{Total PFAS Change Over Time in POTW}\label{fig:unnamed-chunk-24}
+\end{figure}
 
 \begin{figure}
 
 \includegraphics{PFAS_FinalProject_files/figure-latex/unnamed-chunk-25-1} \hfill{}
 
-\caption{Total PFAS Change Over Time in POTW}\label{fig:unnamed-chunk-25}
-\end{figure}
-
-\begin{verbatim}
-## Warning: Removed 3 row(s) containing missing values (geom_path).
-\end{verbatim}
-
-\begin{verbatim}
-## Warning: Removed 3 rows containing missing values (geom_point).
-\end{verbatim}
-
-\begin{figure}
-
-\includegraphics{PFAS_FinalProject_files/figure-latex/unnamed-chunk-26-1} \hfill{}
-
-\caption{Total PFAS Change Over Time in Select POTW Sites}\label{fig:unnamed-chunk-26}
+\caption{Total PFAS Change Over Time in Select POTW Sites}\label{fig:unnamed-chunk-25}
 \end{figure}
 
 \hypertarget{question-3-further-investigation}{%
@@ -910,35 +823,45 @@ Investigation}\label{question-3-further-investigation}}
 advisory
 levels?}\label{how-many-samples-had-reporting-limits-above-health-advisory-levels}}
 
-FILL IN
+As demonstrated earlier in the exploratory section, both datasets
+indicated reporting levels and lab qualifiers with relevant results.
+Concerningly, many samples had high reporting limits meaning that many
+samples did not have a reported value.
 
-\begin{verbatim}
-## `stat_bin()` using `bins = 30`. Pick better value with `binwidth`.
-\end{verbatim}
+Using 30ppt as a benchmark for what a potentially conceringly high
+reporting level is, the following histogram illustrates the number of
+samples that had reporting limits above 30ppt. From these results, it
+can be inferred that a signficant number of samples had unreported
+analytes above 30ppt, meaning there are potentially many sites with
+concerning levels of PFAS analytes that are being overlooked and
+possibly mis-identified as `safe'. Note that PWS had an overwhelmingly
+large number of unreported analyte samples due to these reporting
+limits.
 
+\includegraphics{PFAS_FinalProject_files/figure-latex/unnamed-chunk-26-1.pdf}
 \includegraphics{PFAS_FinalProject_files/figure-latex/unnamed-chunk-27-1.pdf}
 
-\hypertarget{what-percentage-of-total-unreported-results-were-below-health-advisory-limits}{%
-\subsubsection{What percentage of total unreported results were below
+\hypertarget{what-percentage-of-total-unreported-results-were-above-health-advisory-limits}{%
+\subsubsection{What percentage of total unreported results were above
 health advisory
-limits?}\label{what-percentage-of-total-unreported-results-were-below-health-advisory-limits}}
+limits?}\label{what-percentage-of-total-unreported-results-were-above-health-advisory-limits}}
 
-FILL IN
+Looking closer at the previous results, the following percentages clue
+researchers and regulators into how concerning these reporting limits
+are. While only 8.74\% of analytes in the POTW samples were unreported
+at levels over 30ppt, a notably large 96.97\% of the analytes sampled at
+PWS sites were unreported above 30ppt. This indicates an urgent need to
+reconsider and likely re-sample these sites for safety reasons. Further
+analysis should also consider the reporting limits as they pertain to
+specific analytes or chain-lengths, depending on health risks and
+upcoming regulation.
 
 \begin{verbatim}
-## [1] 79.18983
+## [1] 8.737093
 \end{verbatim}
 
 \begin{verbatim}
-## [1] 92.29547
-\end{verbatim}
-
-\begin{verbatim}
-## [1] 0.06317119
-\end{verbatim}
-
-\begin{verbatim}
-## [1] 84.04927
+## [1] 96.96778
 \end{verbatim}
 
 \newpage
@@ -949,5 +872,48 @@ FILL IN
 Summarize your major findings from your analyses in a few paragraphs.
 What conclusions do you draw from your findings? Relate your findings
 back to the original research questions and rationale.
+
+The original purpose of this research was to synthesis the current
+publicly-available datasets on PFAS levels in North Carolina, begin
+building a bigger picture of the emerging contaminant PFAS presence, and
+identify areas of concern. The most notable findings from the cleaning
+process, exploration, and analysis are as follows: 1. The current data
+management structure for emerging contaminants in the state of North
+Carolina makes it prohibitively difficult for researchers and
+policymakers to grasp a comprehensive picture of PFAS occurance,
+distribution, and risk. Specifically, the static PDF report of POTW
+sample results, inconsistent names and formats for analytes, and
+confusing presentation of reporting limits (e.g., PWS dataset displaying
+limits in the same column as results) is a signifcant barrier to
+subsequent synthesis and analysis.
+
+\begin{enumerate}
+\def\labelenumi{\arabic{enumi}.}
+\setcounter{enumi}{1}
+\item
+  Despite signficant public and regulatory attention on the long-chain
+  PFOA and PFOS analytes, this research clearly demonstrates that these
+  are a small percentage of total PFAS present in North Carolina water.
+  A narrow focus on these compounds causes an overlook of other water
+  bodies that may pose significant health risks. Furthermore, it is
+  clear that short-chain PFAS are the most abundant in these samples
+  which should direct further research into associated health risks and
+  inform remediation options because most treatment methods are
+  ineffective at removing short-chain PFAS.
+\item
+  There is insufficient publicly-available data at this time to
+  understand temporal and spatial trends, however the three-month
+  sampling period for POTWs illustrated coinciding spikes and possibly
+  an increasing trend over the summer months which needs further
+  investigation.
+\item
+  The staggeringly high reporting limits (particularly for PWS samples)
+  are a clear indication that any conclusions about risk, total PFAS, or
+  appropriate remediation based on these datasets are likely
+  misinformed. There is an urgent need for these sites to be re-tested
+  in a manner that allows the lab to confidently report analyte levels
+  at or above limits appropriate to their health risk (e.g, 10 ppt for
+  long-chain PFAS).
+\end{enumerate}
 
 \end{document}
