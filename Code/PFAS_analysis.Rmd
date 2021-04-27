@@ -152,6 +152,16 @@ ggplot(topsites_wwtp, aes(x = Site, y = TotalPFAS)) +
   theme(axis.text.x=element_blank(),
         axis.ticks.x=element_blank()) 
 
+
+ggplot(PFAS_WWTP_wide_clean, aes(x=month, y = TotalPFAS, group=Site)) +
+  geom_line(aes(color=Site)) +
+  geom_point(aes(color=Site)) +
+  scale_x_continuous(breaks=c(7, 8, 9)) +
+  ylim(0,600) +
+  ylab("Total PFAS (ppt)") +
+  xlab("2019 Month") +
+  theme(legend.position="right")
+
 ```
 
 ### Question 1d: [Tay] Are any spots with one analyte over 70? over 30?
