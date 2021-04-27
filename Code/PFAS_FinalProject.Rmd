@@ -20,19 +20,19 @@ mainfont: Times New Roman
 \listoffigures 
 \newpage
 
-```{r setup}
+```{r setup, echo = FALSE, message=FALSE, warning=FALSE}
 #sets the default values of chunk options
-knitr::opts_chunk$set(echo = FALSE, fig.width = 10, fig.height = 10)
-```
+knitr::opts_chunk$set(echo = FALSE, message=FALSE, warning=FALSE, fig.width = 10, fig.height = 10)
 
-* Knitting commands in code chunks:
- - `include = FALSE` - code is run, but neither code nor results appear in knitted file
- - `echo = FALSE`    - code not included in knitted file, but results are
- - `eval = FALSE`    - code is not run in the knitted file
- - `message = FALSE` - messages do not appear in knitted file
- - `warning = FALSE` - warnings do not appear...
- - `fig.cap = "..."` - adds a caption to graphical results
- 
+# * Knitting commands in code chunks:
+#  - `include = FALSE` - code is run, but neither code nor results appear in knitted file
+#  - `echo = FALSE`    - code not included in knitted file, but results are
+#  - `eval = FALSE`    - code is not run in the knitted file
+#  - `message = FALSE` - messages do not appear in knitted file
+#  - `warning = FALSE` - warnings do not appear...
+#  - `fig.cap = "..."` - adds a caption to graphical results
+
+```
 
 ```{r, include = FALSE}
 # Set your working directory
@@ -125,9 +125,13 @@ Links to Data Sources|[2018 PWS](https://deq.nc.gov/about/divisions/water-resour
 
 # Exploratory Analysis 
 
-
-
 ```{r}
+
+## ISSUES KNITTING
+
+## Map of POTW Sites
+
+#Although DEQ created maps of their PWS sample locations, they did not appear to have a map displaying the distribution of POTW sample sites. This is helpful in identifying where sampling occured, and their proximity to various communities.
 
 ## Map of POTW Samples
 
@@ -135,13 +139,25 @@ Links to Data Sources|[2018 PWS](https://deq.nc.gov/about/divisions/water-resour
 #   PFAS_WWTP_wide_clean %>%
 #   select(lat, long, Site:Type)
 # 
-# PFAS_WWTP_wide_sf <- 
-#   PFAS_WWTP_wide_sf %>% 
-#   group_by(Site, lat, long, TotalPFAS) %>% 
+# PFAS_WWTP_wide_sf <-
+#   PFAS_WWTP_wide_sf %>%
+#   group_by(Site, lat, long, TotalPFAS) %>%
 #   st_as_sf(coords = c('long','lat'), crs=4269)
 # 
-# mapview(PFAS_WWTP_wide_sf)
-
+# #Set the available map backgrounds
+# mapviewOptions(basemaps = c('OpenStreetMap','Esri.WorldImagery','Stamen.Toner','Stamen.Watercolor'))
+# 
+# #Create a mapView map from our EPA data
+# myMap = mapview(PFAS_WWTP_wide_sf,
+#          xcol = "long",
+#          ycol = "lat",
+#          zcol = 'TotalPFAS',
+#          at = seq(0,2500, 200),
+#          crs = 4326L,
+#          grid = FALSE,
+#          layer.name = "POTW Sites: Total PFAS")
+# 
+# myMap
 ```
 
 ## Unique analytes
@@ -348,12 +364,10 @@ knitr::kable(source_reporting, col.names = c("Analyte", "Max. Reporting Limit"),
 
 # Analysis
 
-Each paragraph, accompanied by one or more visualizations, should describe the major findings and how they relate to the  question and hypotheses. 
-
 ## Question 1: Occurence
 ### What are the most abundant analytes present?
 
-FILL IN
+The following two plots indicate the analytes present in POTW and PWS samples. First, the finding indicates that a wider variety of analytes were found in POTW compared to PWS, which may indicate additional or different contamination sources. It may also be an indicator of varioius PFAS precursors and or their degraded forms, which further research can focus on identifying patterns influencing those changes. Lastly, these graphs are the first clue that PFOA, PFOS, and GenX (the most commonly discussed, researched, and regulated analytes) may not be the most abundant PFAS we are exposed to via water.
 
 ```{r, fig.align = 'left', fig.cap = "Analytes Present in POTW Sites"}
 
@@ -378,7 +392,9 @@ ggplot(PFAS_Source_clean, aes(fill=Analyte, y=ppt, x=Site)) +     geom_bar(posit
 
 ### Which sites have analytes exceeding health advisory levels?
 
-FILL IN
+Using the unique function allows a closer look at the number of sites with analytes above 30ppt and 70ppt (common health advisory or regulatory limits for PFOA and PFOS). In the POTW samples, there were 23 sites with analytes above 30ppt and 13 above 70ppt. In PWS samples, 11 sites were above 30ppt and 5 above 70ppt. Rather than comparing the two, these numbers indicate that a signficant number of sites had analytes at what could potentially be a concerning level, and further research is needed to determine if those specific analytes exceeding 30ppt and 70ppt pose a health risk. Certainly, they indicate the widespread presence of high levels of PFAS in North Carolina. 
+
+The following plots elaborate on this data, indicating which sites showed those respective levels. This information can be used to target subsequent sampling, depending on if the particular analytes pose a health risk to the communities nearby.
 
 ```{r}
 
@@ -390,13 +406,6 @@ wwtp_analyte_above_70 <-
   PFAS_WWTP_clean %>%
   filter(ppt > 70)
 
-unique(wwtp_analyte_above_30$Site) #11 Sites above 30 
-unique(wwtp_analyte_above_70$Site) #5 sites above 70
-
-```
-
-```{r}
-
 source_analyte_above_30 <- 
   PFAS_Source_clean %>%
   filter(ppt > 30)
@@ -404,6 +413,9 @@ source_analyte_above_30 <-
 source_analyte_above_70 <- 
   PFAS_Source_clean %>%
   filter(ppt > 70)
+
+unique(wwtp_analyte_above_30$Site) #23 Sites above 30 
+unique(wwtp_analyte_above_70$Site) #13 sites above 70
 
 unique(source_analyte_above_30$Site) #11 Sites above 30 
 unique(source_analyte_above_70$Site) #5 sites above 70
@@ -488,7 +500,9 @@ print(source_analyte_70_plot)
 
 ### What chain lengths are most abundant and present?
 
-FILL IN
+PFAS have characteristically strong carbon bonds, and depending on their chain length, are categorized as either short- or long-chained PFAS. Long-chain PFAS are most researched (e.g., PFOA, PFOS) and take a long time to degrade. Furthermore, certain remediation treatments (such as the common and most affordable granular activated carbon (GAC)) are only effective at removing long-chain PFAS.
+
+The following graphs indicate the proportion of total PFAS by chain length. This information should inform remediation and treatment upgrades as well as be interpolated to identify risks (for example, sites with predominantly short-chained PFAS but with GAC treatment may falsely assume it is adequately treating the risk to its community).
 
 ```{r, fig.align = 'left', fig.cap = "Total PFAS by Chain Length in POTW"}
 
@@ -512,7 +526,7 @@ ggplot(subset(PFAS_Source_clean, !is.na(ppt)), aes(x = Site, y = ppt))+
 
 ### What portion of total PFAS are PFOA and PFOS?
 
-FILL IN
+This graph of POTW sites further illustrate the concern that the public is over-focused on PFOA and PFOS and is overlooking potential dangers from high total PFAS. Specifically, sites such as Sanford-Big Buffalo Creek get a lot of public attention because it had a high level of PFOA/PFOS but sites like the Town of Ramsur, Rose Hill, and Wallace Regional WWTPs had total PFAS above 250ppt and are infrequently mentioned.
 
 ```{r, fig.align = 'left', fig.cap = "Proportion of PFOA and PFOS in Total PFAS at POTW Sites"}
 
@@ -530,19 +544,14 @@ ggplot(WWTP_sum.total, aes(x=Site, y=ppt, fill=Analyte)) +
     legend.position="right")
 
 ```
-
-
-
-
-
 ## Question 2: Distribution
-### Are there bodies of drinking water sources with concerningly high levels of PFAS that aren't commonly discussed?
+### Are there bodies of water with concerningly high levels of PFAS that aren't commonly discussed?
 
-FILL IN
-
-NEED TO BE ABLE TO SUM SOURCE DATASET
+Expanding upon Question 1, graphing the top 12 highest total PFAS sites is the first step for researchers and regulators to focus further investigatory sampling. As mentioned before, in addition to the commonly publicized Burlington and Sandford-Big Buffalo Creek WWTPs, the Town of Ramseur, City of Mebane, Wallace Regional City of Raeford, Greensboro, Wilmington (North and Southside), North Harnett Regional, and City of Durham/South Durham Water Reclamation sites have surprisingly high total PFAS.
 
 ```{r}
+
+# NEED TO BE ABLE TO SUM SOURCE DATASET
 
 # topsites_source <-
 #   PFAS_wide_clean %>%
@@ -561,11 +570,28 @@ NEED TO BE ABLE TO SUM SOURCE DATASET
 #   theme(axis.text.x=element_blank(),
 #         axis.ticks.x=element_blank()) 
 
+
+topsites_wwtp <-
+  PFAS_WWTP_wide_clean %>%
+  select(Site, TotalPFAS)
+
+topsites_wwtp <- topsites_wwtp[with(topsites_wwtp,order(-TotalPFAS)),]
+
+topsites_wwtp <- topsites_wwtp[1:20,]
+
+# facet wrap each site by x = analyte y = ppt
+
+ggplot(topsites_wwtp, aes(x = Site, y = TotalPFAS)) + 
+  geom_bar(stat="identity") +
+  facet_wrap(vars(Site), nrow = 5) +
+  ylab("Total PFAS (ppt)") +
+  theme(axis.text.x=element_blank(),
+        axis.ticks.x=element_blank()) 
 ```
 
 ### How does total PFAS change over time?
 
-FILL IN
+Only the POTW dataset provided enough data for a temporal analysis, but it is ill-advised to make broad conclusions based on a three-month testing period. The first graph seems to indicate that, although there are isolated spikes, total PFAS remained consistently high and possibly increasing. A closer look (second graph removing outlier) illustrates that there was a definitive spike across multiple sites in August. Further research and more extensive sampling is needed to identify whether this is a temporal/seasonal trend, or if there were source-specific variables that impacted these levels.
 
 ```{r, fig.align = 'left', fig.cap = "Total PFAS Change Over Time in POTW"}
 
@@ -595,65 +621,67 @@ ggplot(PFAS_WWTP_wide_clean, aes(x=month, y = TotalPFAS, group=Site)) +
   theme(legend.position="right")
 
 ```
-
-
 ## Question 3: Further Investigation
 
 ### How many samples had reporting limits above health advisory levels?
 
-FILL IN
+As demonstrated earlier in the exploratory section, both datasets indicated reporting levels and lab qualifiers with relevant results. Concerningly, many samples had high reporting limits meaning that many samples did not have a reported value. 
+
+Using 30ppt as a benchmark for what a potentially conceringly high reporting level is, the following histogram illustrates the number of samples that had reporting limits above 30ppt. From these results, it can be inferred that a signficant number of samples had unreported analytes above 30ppt, meaning there are potentially many sites with concerning levels of PFAS analytes that are being overlooked and possibly mis-identified as 'safe'. Note that PWS had an overwhelmingly large number of unreported analyte samples due to these reporting limits.  
 
 ```{r}
 
-wwtp_ND_over10 <-
+wwtp_ND_over30 <-
   PFAS_WWTP_clean[!is.na(PFAS_WWTP_clean$lab.qual),] %>%
   filter(lab.qual >= 30)
 
-ggplot(wwtp_ND_over10)+
+ggplot(wwtp_ND_over30)+
   geom_histogram(aes(x=lab.qual))+
-  xlab("Unreported Over 30 ppt")+
+  xlab("Unreported Over 30 ppt - POTW")+
+  ylab("Sample Count")
+
+```
+```{r}
+
+source_ND_over30 <-
+  PFAS_Source_clean[!is.na(PFAS_Source_clean$lab.qual),] %>%
+  filter(lab.qual >= 30)
+
+ggplot(source_ND_over30)+
+  geom_histogram(aes(x=lab.qual))+
+  xlab("Unreported Over 30 ppt - PWS")+
   ylab("Sample Count")
 
 ```
 
-### What percentage of total unreported results were below health advisory limits?
+### What percentage of total unreported results were above health advisory limits?
 
-FILL IN
+Looking closer at the previous results, the following percentages clue researchers and regulators into how concerning these reporting limits are. While only 8.74% of analytes in the POTW samples were unreported at levels over 30ppt, a notably large 96.97% of the analytes sampled at PWS sites were unreported above 30ppt. This indicates an urgent need to reconsider and likely re-sample these sites for safety reasons. Further analysis should also consider the reporting limits as they pertain to specific analytes or chain-lengths, depending on health risks and upcoming regulation.
 
 ```{r}
 
-# of all the ND, how many are under 5
+# of all the ND, how many are over 30
 
 # how many total
 wwtp_ND <-
   PFAS_WWTP_clean[!is.na(PFAS_WWTP_clean$lab.qual),] %>%
   filter(lab.qual > 0)
 
-# percentage under 10
+# percentage under 30
 
-wwtp_ND_under10 <-
+wwtp_ND_above30 <-
   PFAS_WWTP_clean[!is.na(PFAS_WWTP_clean$lab.qual),] %>%
-  filter(lab.qual <= 10)
+  filter(lab.qual >= 30)
 
-wwtp_nd_percent10 = (dim(wwtp_ND_under10)[1] / dim(wwtp_ND)[1])*100
+wwtp_nd_percent30 = (dim(wwtp_ND_above30)[1] / dim(wwtp_ND)[1])*100
 
-wwtp_nd_percent10
-
-# percentage under 70
-
-wwtp_ND_under70 <-
-  PFAS_WWTP_clean[!is.na(PFAS_WWTP_clean$lab.qual),] %>%
-  filter(lab.qual <= 70)
-
-wwtp_nd_percent70 = (dim(wwtp_ND_under70)[1] / dim(wwtp_ND)[1])*100
-
-wwtp_nd_percent70
+wwtp_nd_percent30
 
 ```
 
 ```{r}
 
-# of all the ND, how many are under 5
+# of all the ND, how many are over 30
 
 # how many total
 source_ND <-
@@ -662,27 +690,15 @@ source_ND <-
 
 # percentage under 10
 
-source_ND_under10 <-
+source_ND_above30 <-
   PFAS_Source_clean[!is.na(PFAS_Source_clean$lab.qual),] %>%
-  filter(lab.qual <= 10)
+  filter(lab.qual >= 30)
 
-source_nd_percent10 = (dim(source_ND_under10)[1] / dim(source_ND)[1])*100
+source_nd_percent30 = (dim(source_ND_above30)[1] / dim(source_ND)[1])*100
 
-source_nd_percent10
-
-# percentage under 70
-
-source_ND_under70 <-
-  PFAS_Source_clean[!is.na(PFAS_Source_clean$lab.qual),] %>%
-  filter(lab.qual <= 70)
-
-source_nd_percent70 = (dim(source_ND_under70)[1] / dim(source_ND)[1])*100
-
-source_nd_percent70
+source_nd_percent30
 
 ```
-
-
 
 \newpage
 
@@ -690,6 +706,11 @@ source_nd_percent70
 
 Summarize your major findings from your analyses in a few paragraphs. What conclusions do you draw from your findings? Relate your findings back to the original research questions and rationale.
 
+The original purpose of this research was to synthesis the current publicly-available datasets on PFAS levels in North Carolina, begin building a bigger picture of the emerging contaminant PFAS presence, and identify areas of concern. The most notable findings from the cleaning process, exploration, and analysis are as follows:
+1. The current data management structure for emerging contaminants in the state of North Carolina makes it prohibitively difficult for researchers and policymakers to grasp a comprehensive picture of PFAS occurance, distribution, and risk. Specifically, the static PDF report of POTW sample results, inconsistent names and formats for analytes, and confusing presentation of reporting limits (e.g., PWS dataset displaying limits in the same column as results) is a signifcant barrier to subsequent synthesis and analysis.
 
+2. Despite signficant public and regulatory attention on the long-chain PFOA and PFOS analytes, this research clearly demonstrates that these are a small percentage of total PFAS present in North Carolina water. A narrow focus on these compounds causes an overlook of other water bodies that may pose significant health risks. Furthermore, it is clear that short-chain PFAS are the most abundant in these samples which should direct further research into associated health risks and inform remediation options because most treatment methods are ineffective at removing short-chain PFAS.
 
+3. There is insufficient publicly-available data at this time to understand temporal and spatial trends, however the three-month sampling period for POTWs illustrated coinciding spikes and possibly an increasing trend over the summer months which needs further investigation.
 
+4. The staggeringly high reporting limits (particularly for PWS samples) are a clear indication that any conclusions about risk, total PFAS, or appropriate remediation based on these datasets are likely misinformed. There is an urgent need for these sites to be re-tested in a manner that allows the lab to confidently report analyte levels at or above limits appropriate to their health risk (e.g, 10 ppt for long-chain PFAS).
